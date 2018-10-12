@@ -85,5 +85,4 @@ class User
     public function __construct() {
         $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
     }
-
 }
