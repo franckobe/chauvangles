@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\ManyToMany;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\GroupRepository")
@@ -36,5 +37,15 @@ class Group
         $this->date_creation = $date_creation;
 
         return $this;
+    }
+
+    /**
+     * Many Groups have Many Users.
+     * @ManyToMany(targetEntity="User", mappedBy="groups")
+     */
+    private $users;
+
+    public function __construct() {
+        $this->users = new \Doctrine\Common\Collections\ArrayCollection();
     }
 }
