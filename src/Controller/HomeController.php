@@ -17,32 +17,33 @@ class HomeController extends AbstractController
      */
     public function index()
     {
-        $debug = array (
-            'id' => 5,
-            'titre' => "Hey"
-        );
-
-        dump($debug);
-
-        return new Response('<html><body>Welcome on slacklite.com</body></html>');
-
-//        return $this->json([
-//            'message' => 'Welcome to your new controller!',
-//            'path' => 'src/Controller/HomeController.php',
-//        ]);
+        return $this->render('home/index.html.mustache', array());
     }
 
     /**
-     * @Route("/dir", name="dirnote")
-     * @return Mustache_Engine
+     * @Route("/about", name="about")
+     * @return Response
      */
-    public function dirnote()
+    public function about()
     {
-        $name = 'thomas';
-        $value= 1000;
-//        $m = new Mustache_Engine
-//        echo $m->render('index.html.mustache', array('planet' => 'World!'));
+        return $this->render('home/about.html.mustache', array());
+    }
 
-        return $this->render('home/index.html.mustache', array('name' => $name, 'value' => $value));
+    /**
+     * @Route("/word", name="word")
+     * @return Response
+     */
+    public function word()
+    {
+        return $this->render('home/word.html.mustache', array());
+    }
+
+    /**
+     * @Route("/login", name="login")
+     * @return Response
+     */
+    public function login()
+    {
+        return $this->render('home/login.html.mustache', array());
     }
 }
