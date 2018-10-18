@@ -26,7 +26,10 @@ class HomeController extends AbstractController
      */
     public function about()
     {
-        return $this->render('home/about.html.mustache', array());
+        $offre = 40;
+        return $this->render('home/about.html.mustache', [
+            'offre' => $offre
+        ]);
     }
 
     /**

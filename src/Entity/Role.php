@@ -7,9 +7,9 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\CategoryRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\RoleRepository")
  */
-class Category
+class Role
 {
     /**
      * @ORM\Id()
@@ -24,7 +24,7 @@ class Category
     private $label;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\User", mappedBy="category")
+     * @ORM\OneToMany(targetEntity="App\Entity\User", mappedBy="Role")
      */
     private $users;
 
@@ -62,7 +62,7 @@ class Category
     {
         if (!$this->users->contains($user)) {
             $this->users[] = $user;
-            $user->setCategory($this);
+            $user->setRole($this);
         }
 
         return $this;
@@ -73,8 +73,8 @@ class Category
         if ($this->users->contains($user)) {
             $this->users->removeElement($user);
             // set the owning side to null (unless already changed)
-            if ($user->getCategory() === $this) {
-                $user->setCategory(null);
+            if ($user->getRole() === $this) {
+                $user->setRole(null);
             }
         }
 

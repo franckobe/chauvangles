@@ -19,10 +19,10 @@ class User
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Category", inversedBy="users")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Role", inversedBy="users")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $category;
+    private $Role;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -39,14 +39,14 @@ class User
         return $this->id;
     }
 
-    public function getCategory(): ?Category
+    public function getRole(): ?Role
     {
-        return $this->category;
+        return $this->Role;
     }
 
-    public function setCategory(?Category $category): self
+    public function setRole(?Role $Role): self
     {
-        $this->category = $category;
+        $this->Role = $Role;
 
         return $this;
     }
