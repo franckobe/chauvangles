@@ -10,12 +10,17 @@
         "symfony/apache-pack": "^1.0",
         "symfony/console": "*",
         "symfony/flex": "^1.1",
+        "symfony/form": "*",
         "symfony/framework-bundle": "*",
         "symfony/orm-pack": "^1.0",
+        "symfony/security-bundle": "*",
+        "symfony/validator": "*",
         "symfony/web-server-bundle": "*",
         "symfony/yaml": "*"
     },
     "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^3.0",
+        "fzaninotto/faker": "^1.8",
         "sensiolabs/security-checker": "^5.0",
         "symfony/dotenv": "*",
         "symfony/maker-bundle": "^1.7",

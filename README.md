@@ -1,6 +1,6 @@
 #GUIDE SET-UP
 
-## Modifier le .env
+##Modifier le .env
 
 root est le user suivie du mot de passe (içi il n'y en a pas), slacklite est le nom donné à notre BDD
 >   DATABASE_URL=mysql://root:@127.0.0.1:3306/slacklite
@@ -13,4 +13,6 @@ root est le user suivie du mot de passe (içi il n'y en a pas), slacklite est le
 
 >   php bin/console doctrine:migrations:migrate
 
+##Seed de données 
 
+>  php bin/console doctrine:fixtures:load --append
