@@ -83,11 +83,11 @@
     "doctrine/reflection": {
         "version": "v1.0.0"
     },
-    "fzaninotto/faker": {
-        "version": "v1.8.0"
-    },
     "evenement/evenement": {
         "version": "v3.0.1"
+    },
+    "fzaninotto/faker": {
+        "version": "v1.8.0"
     },
     "guzzlehttp/psr7": {
         "version": "1.4.2"
@@ -239,6 +239,9 @@
     "symfony/http-kernel": {
         "version": "v4.1.6"
     },
+    "symfony/inflector": {
+        "version": "v4.1.6"
+    },
     "symfony/intl": {
         "version": "v4.1.6"
     },
@@ -271,6 +274,9 @@
     },
     "symfony/profiler-pack": {
         "version": "v1.0.3"
+    },
+    "symfony/property-access": {
+        "version": "v4.1.6"
     },
     "symfony/routing": {
         "version": "4.0",
