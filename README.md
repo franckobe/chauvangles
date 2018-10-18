@@ -1,16 +1,33 @@
-#GUIDE SET-UP
+# GUIDE SET-UP
 
-<p>Créer une base de donnée nommée slacklite</p>
+## Modifier le .env
+
+    DATABASE_URL=mysql://root:@127.0.0.1:3306/slacklite
     
-##Modifier le .env
-<p>root est le user suivie du mot de passe (içi il n'y en a pas)</p>
-	DATABASE_URL=mysql://root:@127.0.0.1:3306/slacklite
+Avec l'url précédente on définit les paramètres suivants :    
     
+>   DB_Name : root
 
-##Faire une migration
-	php bin/console doctrine:migrations:migrate
+>   DB_Password : ' '
 
-##Installer / Lancer le projet
-	composer install
+>   DB : slacklite
+
+## Générer la base de données
+
+    php bin/console doctrine:database:create
+ 
+## Migration des modèles de données
+
+    php bin/console doctrine:migrations:migrate
+
+## Seed de données
+
+    php bin/console doctrine:fixtures:load --append
+
+## Installer les dépendances
+
+    composer install
+
+## Lancer le projet
+
 	php bin/console server:run
-
