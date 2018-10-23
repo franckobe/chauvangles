@@ -24,8 +24,8 @@ class UserFixture extends Fixture
 
         for ($i = 0; $i < 10; $i++) {
             $user = new User();
-            $user->setemail($faker->name);
-            $user->setPassword($this->passwordEncoder->encodePassword($user, $faker->password));
+            $user->setemail($faker->email);
+            $user->setPassword($this->passwordEncoder->encodePassword($user, "toto"));
             $user->setRoles([$role[array_rand($role)]]);
             $manager->persist($user);
         }
