@@ -2,11 +2,13 @@
 
 namespace App\Controller;
 
-use Mustache_Engine;
+use App\Form\Registration;
+use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
-
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 
 class HomeController extends AbstractController
@@ -17,36 +19,40 @@ class HomeController extends AbstractController
      */
     public function index()
     {
-        return $this->render('home/index.html.mustache', array());
+        $user = $this->getUser();
+        $username = $user->getUsername();
+        return $this->render('home/index.html.mustache', array(
+            'username' => $username));
     }
 
     /**
-     * @Route("/about", name="about")
-     * @return Response
+     * @Route("/register", name="user_registration")
      */
-    public function about()
+    public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder)
     {
-        $offre = 40;
-        return $this->render('home/about.html.mustache', [
-            'offre' => $offre
-        ]);
-    }
+        // 1) build the form
+        $user = new User();
+        $form = $this->createForm(Registration::class, $user);
 
-    /**
-     * @Route("/word", name="word")
-     * @return Response
-     */
-    public function word()
-    {
-        return $this->render('home/word.html.mustache', array());
-    }
+        // 2) handle the submit (will only happen on POST)
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
 
-    /**
-     * @Route("/login", name="login")
-     * @return Response
-     */
-    public function login()
-    {
-        return $this->render('home/login.html.mustache', array());
+            // 3) Encode the password
+            $password = $passwordEncoder->encodePassword($user, $user->getPassword());
+            $user->setPassword($password);
+
+            // 4) save the User
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('home');
+        }
+
+        return $this->render(
+            'security/register.html.twig',
+            array('form' => $form->createView())
+        );
     }
 }
