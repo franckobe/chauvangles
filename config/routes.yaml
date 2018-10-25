@@ -6,3 +6,6 @@ index:
 dir:
     path: /dir
     controller: App\Controller\HomeController::DirNote
+
+app_logout:
+    path: /logout
