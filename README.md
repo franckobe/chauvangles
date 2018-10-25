@@ -18,6 +18,7 @@ Avec l'url précédente on définit les paramètres suivants :
  
 ## Migration des modèles de données
 
+    php bin/console make:migration
     php bin/console doctrine:migrations:migrate
 
 ## Seed de données
