@@ -17,42 +17,30 @@ class HomeController extends AbstractController
      * @Route("/", name="home")
      * @return Response
      */
-    public function index()
+    public function index(Request $request, UserPasswordEncoderInterface $passwordEncode)
     {
-        $user = $this->getUser();
-        $username = $user->getUsername();
-        return $this->render('home/index.html.mustache', array(
-            'username' => $username));
-    }
+        if ($this->denyAccessUnlessGranted('IS_AUTHENTICATED_ANONYMOUSLY')) {
 
-    /**
-     * @Route("/register", name="user_registration")
-     */
-    public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder)
-    {
-        // 1) build the form
-        $user = new User();
-        $form = $this->createForm(Registration::class, $user);
+            // get the login error if there is one
+            $error = $authenticationUtils->getLastAuthenticationError();
+            // last username entered by the user
+            $lastUsername = $authenticationUtils->getLastUsername();
 
-        // 2) handle the submit (will only happen on POST)
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-
-            // 3) Encode the password
-            $password = $passwordEncoder->encodePassword($user, $user->getPassword());
-            $user->setPassword($password);
-
-            // 4) save the User
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($user);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('home');
+            return $this->render('security/login.html.twig',
+                ['last_username' => $lastUsername,
+                    'error' => $error]);
         }
 
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+            $user = $this->getUser();
+            $username = $user->getUsername();
+            $controller_name = "IndexController";
+
+
         return $this->render(
-            'security/register.html.twig',
-            array('form' => $form->createView())
+            'home/home.html.twig',
+            array('username' => $username,
+                'controller_name' => $controller_name)
         );
     }
 }

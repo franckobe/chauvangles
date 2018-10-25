@@ -15,9 +15,7 @@ class AboutController extends AbstractController
      */
     public function about()
     {
-        $offre = 40;
-        return $this->render('home/about.html.mustache', [
-            'offre' => $offre
-        ]);
+        $controller_name = "AboutController";
+        return $this->render('about/index.html.twig', ["controller_name" => $controller_name]);
     }
 }

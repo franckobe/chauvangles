@@ -15,6 +15,11 @@ class WordController extends AbstractController
      */
     public function word()
     {
-        return $this->render('home/word.html.mustache', array());
+        $controller_name = "WordController"
+;        $directorWord = "Le mot du directeur";
+        return $this->render('word/index.html.twig', [
+            'directorWord' => $directorWord,
+            'controller_name' => $controller_name,
+        ]);
     }
 }
