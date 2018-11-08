@@ -12,35 +12,35 @@ app_logout:
 
 members_all:
     path: /members/get-all
-    controller: App\Controller\HomeController::members_all
+    controller: App\Controller\MembersController::members_all
 
 members_online:
     path: /members/get-online
-    controller: App\Controller\HomeController::members_online
+    controller: App\Controller\MembersController::members_online
 
 discussions_getcreate:
     path: /discussions/get-or-create
-    controller: App\Controller\HomeController::discussions_getcreate
+    controller: App\Controller\DiscussionsController::discussions_getcreate
 
 discussions_addmember:
     path: /discussions/add-member
-    controller: App\Controller\HomeController::discussions_addmember
+    controller: App\Controller\DiscussionsController::discussions_addmember
 
 discussions_leave:
     path: /discussions/leave
-    controller: App\Controller\HomeController::discussions_leave
+    controller: App\Controller\DiscussionsController::discussions_leave
 
 discussions_list:
     path:  /discussions/list
-    controller: App\Controller\HomeController::discussions_list
+    controller: App\Controller\DiscussionsController::discussions_list
 
 discussions_getmessages:
     path:  /discussions/get-messages
-    controller: App\Controller\HomeController::discussions_getmessages
+    controller: App\Controller\DiscussionsController::discussions_getmessages
 
 discussions_postmessage:
     path:  /discussions/post-message
-    controller: App\Controller\HomeController::discussions_postmessage
+    controller: App\Controller\DiscussionsController::discussions_postmessage
 
 
 
