@@ -15,13 +15,18 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
-            anonymous: true
-            guard:
-                authenticators:
-                    - App\Security\LoginFormAuthenticator
+            anonymous: ~
+            json_login:
+                check_path: /login
+
             logout:
                 path:
                     app_logout
+
+#            guard:
+#                authenticators:
+#                   - App\Security\TokenAuthenticator
+
             # activate different ways to authenticate
 
             # http_basic: true

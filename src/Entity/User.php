@@ -83,7 +83,7 @@ class User implements UserInterface
     {
         $this->roles = $roles;
 
-        return $this;
+          return $this;
     }
 
     /**
@@ -125,7 +125,24 @@ class User implements UserInterface
      */
     private $groups;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $apiToken;
+
     public function __construct() {
         $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    public function getApiToken(): ?string
+    {
+        return $this->apiToken;
+    }
+
+    public function setApiToken(?string $apiToken): self
+    {
+        $this->apiToken = $apiToken;
+
+        return $this;
     }
 }

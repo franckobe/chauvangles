@@ -1,5 +1,9 @@
 # GUIDE SET-UP
 
+## Php version
+php 7.1.12
+
+Server local: Laragon
 ## Modifier le .env
 
     DATABASE_URL=mysql://root:@127.0.0.1:3306/slacklite

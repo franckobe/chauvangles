@@ -36,11 +36,11 @@ class HomeController extends AbstractController
             $username = $user->getUsername();
             $controller_name = "IndexController";
 
-
-        return $this->render(
-            'home/home.html.twig',
-            array('username' => $username,
-                'controller_name' => $controller_name)
-        );
+        return $this->json(array('user' => $user));
+//        return $this->render(
+//            'home/home.html.twig',
+//            array('username' => $username,
+//                'controller_name' => $controller_name)
+//        );
     }
 }
