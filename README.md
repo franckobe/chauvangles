@@ -1,5 +1,9 @@
 # GUIDE SET-UP
 
+## Installer les dépendances
+
+    composer install
+    
 ## Modifier le .env
 
     DATABASE_URL=mysql://root:@127.0.0.1:3306/slacklite
@@ -12,10 +16,6 @@ Avec l'url précédente on définit les paramètres suivants :
 
 >   DB : slacklite
 
-## Installer les dépendances
-
-    composer install
-    
 ## Générer la base de données
 
     php bin/console doctrine:database:create
