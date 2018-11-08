@@ -2,10 +2,45 @@ index:
     path: /
     controller: App\Controller\HomeController::index
 
-
 dir:
     path: /dir
     controller: App\Controller\HomeController::DirNote
 
 app_logout:
     path: /logout
+    controller: App\Controller\SecurityController::logout
+
+members_all:
+    path: /members/get-all
+    controller: App\Controller\HomeController::members_all
+
+members_online:
+    path: /members/get-online
+    controller: App\Controller\HomeController::members_online
+
+discussions_getcreate:
+    path: /discussions/get-or-create
+    controller: App\Controller\HomeController::discussions_getcreate
+
+discussions_addmember:
+    path: /discussions/add-member
+    controller: App\Controller\HomeController::discussions_addmember
+
+discussions_leave:
+    path: /discussions/leave
+    controller: App\Controller\HomeController::discussions_leave
+
+discussions_list:
+    path:  /discussions/list
+    controller: App\Controller\HomeController::discussions_list
+
+discussions_getmessages:
+    path:  /discussions/get-messages
+    controller: App\Controller\HomeController::discussions_getmessages
+
+discussions_postmessage:
+    path:  /discussions/post-message
+    controller: App\Controller\HomeController::discussions_postmessage
+
+
+

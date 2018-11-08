@@ -27,10 +27,31 @@ class SecurityController extends AbstractController
     }
 
     /**
+     * @Route("/logout", name="app_logout")
+     * @return \Symfony\Component\HttpFoundation\JsonResponse|Response
+     */
+    public function logout(): Response
+    {
+        $user = $this->getUser();
+        $user = $user->getUsername();
+
+        $controller_name = "authentication";
+        $code = "T0003";
+        $description = "$user a été déconnecté";
+
+        return $this->json(array(
+                'type' => $controller_name,
+                'code' => $code,
+                'description' => $description,
+            )
+        );
+    }
+
+    /**
      * @Route("/register", name="app_register")
      */
-    public function register(Request $request, UserPasswordEncoderInterface $passwordEncode){
-
+    public function register(Request $request, UserPasswordEncoderInterface $passwordEncode)
+    {
         $user = new User();
         $form = $this->createForm(Registration::class, $user);
         $controller_name = "SecurityController";
