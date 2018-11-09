@@ -15,7 +15,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-
+use Lcobucci\JWT\Builder;
+use Lcobucci\JWT\Signer\Hmac\Sha256;
 
 class MembersController extends AbstractController
 {
@@ -25,6 +26,10 @@ class MembersController extends AbstractController
      */
     public function members_all()
     {
+        $controller_name="error";
+        $error = "E0003";
+        $description_error="Bail non renouvelable";
+
         if ($this->denyAccessUnlessGranted('IS_AUTHENTICATED_ANONYMOUSLY')) {
             // get the login error if there is one
             $error = $authenticationUtils->getLastAuthenticationError();
@@ -41,6 +46,10 @@ class MembersController extends AbstractController
             $controller_name = "members";
             $code = "T0004";
             $description = "Liste des utilisateurs inscrits";
+
+            //CONDITION :
+            //  IF SESSIONS TOKEN existe : RETURN (LOGIN / ID) + / ADR IP / STATUS / DERNIERE CO / AVATAR ...
+            //  PAYLOAD = tableau de membre, si 0 membre -> tableau vide
             $payload = array(
                 'id' => 'userId as String',
                 'login' => 'userLogin as String',
@@ -63,6 +72,10 @@ class MembersController extends AbstractController
      */
     public function members_online()
     {
+        $controller_name="error";
+        $error = "E0003";
+        $description_error="Bail non renouvelable";
+
         if ($this->denyAccessUnlessGranted('IS_AUTHENTICATED_ANONYMOUSLY')) {
             // get the login error if there is one
             $error = $authenticationUtils->getLastAuthenticationError();
@@ -79,6 +92,11 @@ class MembersController extends AbstractController
             $controller_name = "members";
             $code = "T0005";
             $description = "Liste des utilisateurs connectés";
+
+
+            //CONDITION :
+            //  IF SESSIONS TOKEN existe : RETURN (LOGIN / ID) where status = connected + (meme info qu'au dessus)
+            //  PAYLOAD = tableau de 100 membres max, si 0 membre -> tableau vide
             $payload = array(
                 'id' => 'userId as String',
                 'login' => 'userLogin as String',
