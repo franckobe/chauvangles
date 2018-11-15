@@ -20,6 +20,7 @@ use Lcobucci\JWT\Signer\Hmac\Sha256;
 
 class MembersController extends AbstractController
 {
+
     /**
      * @Route("/members/get-all", name="members_all")
      * @return \Symfony\Component\HttpFoundation\JsonResponse|Response
@@ -47,20 +48,21 @@ class MembersController extends AbstractController
             $code = "T0004";
             $description = "Liste des utilisateurs inscrits";
 
-            //CONDITION :
-            //  IF SESSIONS TOKEN existe : RETURN (LOGIN / ID) + / ADR IP / STATUS / DERNIERE CO / AVATAR ...
-            //  PAYLOAD = tableau de membre, si 0 membre -> tableau vide
-            $payload = array(
-                'id' => 'userId as String',
-                'login' => 'userLogin as String',
-                'status' => 'disconnected',
-            );
+            //-------------FETCH RESULTs---------------------------------------------------
 
+            $repository = $this->getDoctrine()
+                                ->getRepository(User::class)
+                                ->findAll();
+            $repository = $this->get('serializer')->serialize($repository, 'json');
+            $response = new Response($repository);
+            $response = json_decode($response->getContent(), JSON_UNESCAPED_SLASHES);//PARSE
+
+            //SEND THE RESPONSE --------------------------------------------------
             return $this->json(array(
                     'type' => $controller_name,
                     'code' => $code,
                     'description' => $description,
-                    'payload' => $payload
+                    'payload' => $response
                 )
             );
         }
@@ -93,16 +95,27 @@ class MembersController extends AbstractController
             $code = "T0005";
             $description = "Liste des utilisateurs connectés";
 
-
             //CONDITION :
             //  IF SESSIONS TOKEN existe : RETURN (LOGIN / ID) where status = connected + (meme info qu'au dessus)
             //  PAYLOAD = tableau de 100 membres max, si 0 membre -> tableau vide
+
+            //-------------FETCH RESULTs---------------------------------------------------
+
+            $repository = $this->getDoctrine()
+                ->getRepository(User::class)
+                ->findAll();
+            $repository = $this->get('serializer')->serialize($repository, 'json');
+            $response = new Response($repository);
+            $response = json_decode($response->getContent(), JSON_UNESCAPED_SLASHES);//PARSE
+
             $payload = array(
                 'id' => 'userId as String',
                 'login' => 'userLogin as String',
                 'status' => 'connected',
             );
 
+            
+            //SEND THE RESPONSE --------------------------------------------------
             return $this->json(array(
                     'type' => $controller_name,
                     'code' => $code,

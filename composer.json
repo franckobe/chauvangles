@@ -19,6 +19,7 @@
         "symfony/orm-pack": "^1.0",
         "symfony/routing": "*",
         "symfony/security-bundle": "*",
+        "symfony/serializer": "*",
         "symfony/validator": "*",
         "symfony/web-server-bundle": "*",
         "symfony/yaml": "*"
