@@ -55,7 +55,7 @@ class MembersController extends AbstractController
                                 ->findAll();
             $repository = $this->get('serializer')->serialize($repository, 'json');
             $response = new Response($repository);
-            $response = json_decode($response->getContent(), JSON_UNESCAPED_SLASHES);//PARSE
+            $response = json_decode($response->getContent(), JSON_UNESCAPED_SLASHES);
 
             //SEND THE RESPONSE --------------------------------------------------
             return $this->json(array(
@@ -97,30 +97,22 @@ class MembersController extends AbstractController
 
             //CONDITION :
             //  IF SESSIONS TOKEN existe : RETURN (LOGIN / ID) where status = connected + (meme info qu'au dessus)
-            //  PAYLOAD = tableau de 100 membres max, si 0 membre -> tableau vide
 
             //-------------FETCH RESULTs---------------------------------------------------
-
+            $critera = array("status"=>"connected");
             $repository = $this->getDoctrine()
                 ->getRepository(User::class)
-                ->findAll();
+                ->findBy($critera, null, 100); //status = online, null, 100 membres max
             $repository = $this->get('serializer')->serialize($repository, 'json');
             $response = new Response($repository);
-            $response = json_decode($response->getContent(), JSON_UNESCAPED_SLASHES);//PARSE
+            $response = json_decode($response->getContent(), JSON_UNESCAPED_SLASHES);
 
-            $payload = array(
-                'id' => 'userId as String',
-                'login' => 'userLogin as String',
-                'status' => 'connected',
-            );
-
-            
             //SEND THE RESPONSE --------------------------------------------------
             return $this->json(array(
                     'type' => $controller_name,
                     'code' => $code,
                     'description' => $description,
-                    'payload' => $payload
+                    'payload' => $response
                 )
             );
         }

@@ -41,8 +41,8 @@ class User implements UserInterface
     private $password;
 
     /**
-     * @ORM\Column(type="string", length=180)
-     * @ORM\Column(type="string")
+     * @var boolean the status of the User 1 for connected 0 for disconnected
+     * @ORM\Column(type="boolean")
      */
     private $status;
 
@@ -63,11 +63,6 @@ class User implements UserInterface
         return $this;
     }
 
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
     public function getStatus(): ?string
     {
         return $this->status;

@@ -19,11 +19,11 @@ class UserFixture extends Fixture
     public function load(ObjectManager $manager)
     {
         $role = ['ROLE_ADMIN', 'ROLE_USER'];
-        $status = ['connected', 'disconnected', 'absent'];
+        $status = ['0', '1'];
 
         $faker = Faker\Factory::create('fr_FR');
 
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 25; $i++) {
             $user = new User();
             $user->setemail($faker->email);
             $user->setPassword($this->passwordEncoder->encodePassword($user, "toto"));
