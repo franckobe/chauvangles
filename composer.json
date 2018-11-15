@@ -10,6 +10,7 @@
         "jms/serializer-bundle": "^2.4",
         "lexik/jwt-authentication-bundle": "^2.6",
         "mustache/mustache": "~2.5",
+        "nixilla/php-jwt": "^0.1.1",
         "rollandrock/websocket-bundle": "dev-master",
         "sensio/framework-extra-bundle": "^5.2",
         "symfony/apache-pack": "^1.0",
