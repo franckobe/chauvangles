@@ -56,7 +56,9 @@ class DiscussionsController extends AbstractController
         //  IF DISCUSSION_NAME existe pas : IF MEMBERS IS DEFINE (+ de 9 membre) : RETURN ERREUR E0004 too much poeple
         //  IF DISCUSSION_NAME existe pas : SINON la discussion est créée et les membres ajoutés : RETURN T0007
 
-        $payload = array(
+
+
+        $payloadT0006 = array(
             'id' => 'discussionId as StringOrInt',
             'label' => 'discussionLabel as String',
             'status' => 'connected',
@@ -67,9 +69,14 @@ class DiscussionsController extends AbstractController
             )
         );
 
+        $payloadT0007 = array(
+            'id' => 'discussionId as StringOrInt',
+            'label' => 'discussionLabel as String'
+        );
+
 
         //CREATE RESPONSE ----------------------------------------------------------------------------------------------------------------------------
-        $resp_data = $this->get('serializer')->serialize($payload, 'json');                         //Met au bon format
+        $resp_data = $this->get('serializer')->serialize($payloadT0006, 'json');                         //Met au bon format
         $resp_payload = json_decode($resp_data);                                                //Decodage string to json
 
         //Mise en forme du contenu --------
@@ -109,9 +116,10 @@ class DiscussionsController extends AbstractController
         //  IF USERS NUMBER + createur > 9 : RETURN E0005 too much people
 
         $payload = array(
-            'id' => 'userId as String',
-            'login' => 'userLogin as String',
-            'status' => 'connected',
+            'members' => array(
+                "userLogin as String",
+                "userLogin as String"
+            )
         );
 
         //CREATE RESPONSE ----------------------------------------------------------------------------------------------------------------------------
@@ -159,11 +167,7 @@ class DiscussionsController extends AbstractController
         //      enleve utilisateur de la discussion : RETURN T0010
         //  IF NOT : RETURN E0008
 
-        $payload = array(
-            'id' => 'userId as String',
-            'login' => 'userLogin as String',
-            'status' => 'connected',
-        );
+        $payload = null;
 
         //CREATE RESPONSE ----------------------------------------------------------------------------------------------------------------------------
         $resp_data = $this->get('serializer')->serialize($payload, 'json');                         //Met au bon format
@@ -199,9 +203,9 @@ class DiscussionsController extends AbstractController
 
 
         $payload = array(
-            'id' => 'userId as String',
-            'login' => 'userLogin as String',
-            'status' => 'connected',
+            'status' => 'creator',
+            'id' => 'discussionId as String',
+            'description' => 'description As String or Empty string'
         );
 
         //CREATE RESPONSE ----------------------------------------------------------------------------------------------------------------------------
@@ -242,14 +246,19 @@ class DiscussionsController extends AbstractController
         //  IF MessageNumber NOT DEFINE : RETURN 30 ou 50 message
         //  RETURN MESSAGE LIST with same format GET_OR_CREATE T0006
 
-        $payload = array(
-            'id' => 'userId as String',
-            'login' => 'userLogin as String',
+        $payloadT0006 = array(
+            'id' => 'discussionId as StringOrInt',
+            'label' => 'discussionLabel as String',
             'status' => 'connected',
+            'lastMessages' => array(
+                'author' => 'authorLogin as String',
+                'message' => 'message as StringOrBase64',
+                'dateTime' => 'date as ISODateTime',
+            )
         );
 
         //CREATE RESPONSE ----------------------------------------------------------------------------------------------------------------------------
-        $resp_data = $this->get('serializer')->serialize($payload, 'json');                         //Met au bon format
+        $resp_data = $this->get('serializer')->serialize($payloadT0006, 'json');                         //Met au bon format
         $resp_payload = json_decode($resp_data);                                                //Decodage string to json
 
         //Mise en forme du contenu --------
@@ -287,11 +296,7 @@ class DiscussionsController extends AbstractController
         //  ENREGISTRER MESSAGE POUR DISCUSS AVEC : LOGIN USER ID / DATE HEURE etc..
         //  RETURN T0012
 
-        $payload = array(
-            'id' => 'userId as String',
-            'login' => 'userLogin as String',
-            'status' => 'connected',
-        );
+        $payload = null;
 
         //CREATE RESPONSE ----------------------------------------------------------------------------------------------------------------------------
         $resp_data = $this->get('serializer')->serialize($payload, 'json');                         //Met au bon format
