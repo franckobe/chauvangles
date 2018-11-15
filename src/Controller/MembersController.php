@@ -99,7 +99,7 @@ class MembersController extends AbstractController
             //  IF SESSIONS TOKEN existe : RETURN (LOGIN / ID) where status = connected + (meme info qu'au dessus)
 
             //-------------FETCH RESULTs---------------------------------------------------
-            $critera = array("status"=>"connected");
+            $critera = array("status"=>1);
             $repository = $this->getDoctrine()
                 ->getRepository(User::class)
                 ->findBy($critera, null, 100); //status = online, null, 100 membres max

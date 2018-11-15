@@ -25,16 +25,24 @@ class DiscussionsController extends AbstractController
      */
     public function discussions_getcreate()
     {
+        //VARIABLE ERREUR -----------------------------------------------------------
         $controller_name="error";
+
+        //ERREUR 1---------------------
         $error = "E0004";
         $description_error="Une discussion doit décrire des membres";
+
+        //ERREUR 2---------------------
         $error2 = "E0005";
         $description_error2="Trop de members tuent les membres";
 
+        //VARIABLE FONCTION ----------------------------------------------------------
         $controller_name = "discussion";
+        //FCT 1 -------------------------
         $code = "T0006";
         $description = "Récupération d'une discussion existante";
 
+        //FCT 2 -------------------------
         $code2 = "T0007";
         $description2 = "Création d'une discussion";
 
@@ -114,8 +122,8 @@ class DiscussionsController extends AbstractController
 
         $controller_name = "discussion";
         $code = "T0009";
-        $code2 = "T0010";
         $description = "La discussion a été supprimée, ainsi son historique";
+        $code2 = "T0010";
         $description2 = "Vous avez quitté la conversation";
 
         //CONDITION :
