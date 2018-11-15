@@ -40,6 +40,12 @@ class User implements UserInterface
      */
     private $password;
 
+    /**
+     * @ORM\Column(type="string", length=180)
+     * @ORM\Column(type="string")
+     */
+    private $status;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -53,6 +59,23 @@ class User implements UserInterface
     public function setEmail(string $email): self
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus($status): self
+    {
+        $this->status = $status;
 
         return $this;
     }
