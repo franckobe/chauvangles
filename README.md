@@ -1,5 +1,9 @@
 # GUIDE SET-UP
 
+## Choix de techno
+Nous avons décidé de choisir PHP car c'est une compétence que toute l'équipe partage. Le choix de symfony a été fait car il est un framework populaire sur lequel 
+nous avions tous l'occasion de monter en compétence durant le projet.
+
 ## Php version
 php 7.1.12
 

@@ -21,9 +21,15 @@ class SecurityController extends AbstractController
         $user = $this->getUser();
 
         return $this->json(array(
-            'username' => $user->getUsername(),
-            'roles' => $user->getRoles(),
+            'type' => "authentication",
+            'code' => 'T0001',
+            'description' => 'Vous êtes maintenant connecté',
         ));
+    }
+
+    public function api()
+    {
+        return new Response(sprintf('Logged in as %s', $this->getUser()->getUsername()));
     }
 
     /**
@@ -51,11 +57,7 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('home');
         }
 
-        return $this->render(
-            'security/register.html.twig',
-            array('form' => $form->createView(),
-                'controller_name' => $controller_name,
-                )
-        );
+        return new Response(sprintf('User %s successfully created', $user->getUsername()));
+
     }
 }

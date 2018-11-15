@@ -29,3 +29,19 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+#checkCredentials
+    app.listener.authentication_success_response:
+            class: App\EventListener\AuthenticationListener
+            tags:
+                - { name: kernel.event_listener, event: lexik_jwt_authentication.on_authentication_success, method: onAuthenticationSuccessResponse }
+    app.listener.authentication_failure_response:
+            class: App\EventListener\AuthenticationListener
+            tags:
+                - { name: kernel.event_listener, event: lexik_jwt_authentication.on_authentication_failure, method: onAuthenticationFailureResponse }
+    app.listener.jwt_expired_listener:
+            class: App\EventListener\AuthenticationListener
+            tags:
+                - { name: kernel.event_listener, event: lexik_jwt_authentication.on_jwt_expired, method: onJWTExpired }
+    sensio_framework_extra.view.listener:
+        alias: Sensio\Bundle\FrameworkExtraBundle\EventListener\TemplateListener

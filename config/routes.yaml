@@ -9,3 +9,7 @@ dir:
 
 app_logout:
     path: /logout
+
+api:
+    path: /api
+    controller: App\Controller\SecurityController::api

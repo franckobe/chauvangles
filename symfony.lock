@@ -86,6 +86,15 @@
     "evenement/evenement": {
         "version": "v3.0.1"
     },
+    "friendsofsymfony/rest-bundle": {
+        "version": "2.2",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "2.2",
+            "ref": "258300d52be6ad59b32a888d5ddafbf9638540ff"
+        }
+    },
     "fzaninotto/faker": {
         "version": "v1.8.0"
     },
@@ -94,6 +103,24 @@
     },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
+    },
+    "jms/metadata": {
+        "version": "1.7.0"
+    },
+    "jms/parser-lib": {
+        "version": "1.0.0"
+    },
+    "jms/serializer": {
+        "version": "1.13.0"
+    },
+    "jms/serializer-bundle": {
+        "version": "2.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "2.0",
+            "ref": "fe60ce509ef04a3f40da96e3979bc8d9b13b2372"
+        }
     },
     "lcobucci/jwt": {
         "version": "3.2.4"
@@ -121,6 +148,12 @@
     },
     "ocramius/proxy-manager": {
         "version": "2.1.1"
+    },
+    "phpcollection/phpcollection": {
+        "version": "0.5.0"
+    },
+    "phpoption/phpoption": {
+        "version": "1.5.0"
     },
     "psr/cache": {
         "version": "1.0.1"
@@ -314,8 +347,14 @@
             "ref": "f8a63faa0d9521526499c0a8f403c9964ecb0527"
         }
     },
+    "symfony/serializer": {
+        "version": "v4.1.7"
+    },
     "symfony/stopwatch": {
         "version": "v4.1.6"
+    },
+    "symfony/templating": {
+        "version": "v4.1.7"
     },
     "symfony/translation": {
         "version": "3.3",
@@ -373,6 +412,12 @@
     },
     "twig/twig": {
         "version": "v2.5.0"
+    },
+    "willdurand/jsonp-callback-validator": {
+        "version": "v1.1.0"
+    },
+    "willdurand/negotiation": {
+        "version": "v2.3.1"
     },
     "zendframework/zend-code": {
         "version": "3.3.1"

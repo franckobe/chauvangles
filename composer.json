@@ -6,6 +6,8 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "cboden/ratchet": "^0.4.1",
+        "friendsofsymfony/rest-bundle": "^2.4",
+        "jms/serializer-bundle": "^2.4",
         "lexik/jwt-authentication-bundle": "^2.6",
         "mustache/mustache": "~2.5",
         "rollandrock/websocket-bundle": "dev-master",
@@ -19,6 +21,7 @@
         "symfony/orm-pack": "^1.0",
         "symfony/routing": "*",
         "symfony/security-bundle": "*",
+        "symfony/serializer": "*",
         "symfony/validator": "*",
         "symfony/web-server-bundle": "*",
         "symfony/yaml": "*"
