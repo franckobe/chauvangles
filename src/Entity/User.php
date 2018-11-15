@@ -40,12 +40,6 @@ class User implements UserInterface
      */
     private $password;
 
-    /**
-     * @var boolean the status of the User 1 for connected 0 for disconnected
-     * @ORM\Column(type="boolean")
-     */
-    private $status;
-
     public function getId(): ?int
     {
         return $this->id;
@@ -59,18 +53,6 @@ class User implements UserInterface
     public function setEmail(string $email): self
     {
         $this->email = $email;
-
-        return $this;
-    }
-
-    public function getStatus(): ?string
-    {
-        return $this->status;
-    }
-
-    public function setStatus($status): self
-    {
-        $this->status = $status;
 
         return $this;
     }
