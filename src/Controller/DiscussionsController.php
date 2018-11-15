@@ -8,6 +8,7 @@
 
 namespace App\Controller;
 
+use JWT\Authentication\JWT;
 use App\Form\Registration;
 use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -56,19 +57,33 @@ class DiscussionsController extends AbstractController
         //  IF DISCUSSION_NAME existe pas : SINON la discussion est créée et les membres ajoutés : RETURN T0007
 
         $payload = array(
-            'id' => 'userId as String',
-            'login' => 'userLogin as String',
+            'id' => 'discussionId as StringOrInt',
+            'label' => 'discussionLabel as String',
             'status' => 'connected',
-        );
-
-        //mettre à jour la liste des membres avant de retourner la réponse
-        return $this->json(array(
-                'type' => $controller_name,
-                'code' => $code,
-                'description' => $description,
-                'payload' => $payload
+            'lastMessages' => array(
+                'author' => 'authorLogin as String',
+                'message' => 'message as StringOrBase64',
+                'dateTime' => 'date as ISODateTime',
             )
         );
+
+
+        //CREATE RESPONSE ----------------------------------------------------------------------------------------------------------------------------
+        $resp_data = $this->get('serializer')->serialize($payload, 'json');                         //Met au bon format
+        $resp_payload = json_decode($resp_data);                                                //Decodage string to json
+
+        //Mise en forme du contenu --------
+        $resp_content_json = array(
+            'type' => $controller_name,
+            'code' => $code,
+            'description' => $description,
+            'payload' => $resp_payload
+        );
+        $resp_jwt = JWT::encode($resp_content_json,'toto');          //On le met au format JWT
+        $resp_jwt_json = $this->json(array(
+            'jwt'=> $resp_jwt
+        ));                                                         // Creation du JSON contenant jwt: token_jwt
+        return $resp_jwt_json;                                     //Envoi du token jwt
     }
 
     /**
@@ -99,13 +114,22 @@ class DiscussionsController extends AbstractController
             'status' => 'connected',
         );
 
-        return $this->json(array(
-                'type' => $controller_name,
-                'code' => $code,
-                'description' => $description,
-                'payload' => $payload
-            )
+        //CREATE RESPONSE ----------------------------------------------------------------------------------------------------------------------------
+        $resp_data = $this->get('serializer')->serialize($payload, 'json');                         //Met au bon format
+        $resp_payload = json_decode($resp_data);                                                //Decodage string to json
+
+        //Mise en forme du contenu --------
+        $resp_content_json = array(
+            'type' => $controller_name,
+            'code' => $code,
+            'description' => $description,
+            'payload' => $resp_payload
         );
+        $resp_jwt = JWT::encode($resp_content_json,'toto');          //On le met au format JWT
+        $resp_jwt_json = $this->json(array(
+            'jwt'=> $resp_jwt
+        ));                                                         // Creation du JSON contenant jwt: token_jwt
+        return $resp_jwt_json;                                     //Envoi du token jwt
     }
 
     /**
@@ -141,13 +165,22 @@ class DiscussionsController extends AbstractController
             'status' => 'connected',
         );
 
-        return $this->json(array(
-                'type' => $controller_name,
-                'code' => $code,
-                'description' => $description,
-                'payload' => $payload
-            )
+        //CREATE RESPONSE ----------------------------------------------------------------------------------------------------------------------------
+        $resp_data = $this->get('serializer')->serialize($payload, 'json');                         //Met au bon format
+        $resp_payload = json_decode($resp_data);                                                //Decodage string to json
+
+        //Mise en forme du contenu --------
+        $resp_content_json = array(
+            'type' => $controller_name,
+            'code' => $code,
+            'description' => $description,
+            'payload' => $resp_payload
         );
+        $resp_jwt = JWT::encode($resp_content_json,'toto');          //On le met au format JWT
+        $resp_jwt_json = $this->json(array(
+            'jwt'=> $resp_jwt
+        ));                                                         // Creation du JSON contenant jwt: token_jwt
+        return $resp_jwt_json;                                     //Envoi du token jwt
     }
 
     /**
@@ -171,13 +204,22 @@ class DiscussionsController extends AbstractController
             'status' => 'connected',
         );
 
-        return $this->json(array(
-                'type' => $controller_name,
-                'code' => $code,
-                'description' => $description,
-                'payload' => $payload
-            )
+        //CREATE RESPONSE ----------------------------------------------------------------------------------------------------------------------------
+        $resp_data = $this->get('serializer')->serialize($payload, 'json');                         //Met au bon format
+        $resp_payload = json_decode($resp_data);                                                //Decodage string to json
+
+        //Mise en forme du contenu --------
+        $resp_content_json = array(
+            'type' => $controller_name,
+            'code' => $code,
+            'description' => $description,
+            'payload' => $resp_payload
         );
+        $resp_jwt = JWT::encode($resp_content_json,'toto');          //On le met au format JWT
+        $resp_jwt_json = $this->json(array(
+            'jwt'=> $resp_jwt
+        ));                                                         // Creation du JSON contenant jwt: token_jwt
+        return $resp_jwt_json;                                     //Envoi du token jwt
     }
 
     /**
@@ -206,13 +248,22 @@ class DiscussionsController extends AbstractController
             'status' => 'connected',
         );
 
-        return $this->json(array(
-                'type' => $controller_name,
-                'code' => $code,
-                'description' => $description,
-                'payload' => $payload
-            )
+        //CREATE RESPONSE ----------------------------------------------------------------------------------------------------------------------------
+        $resp_data = $this->get('serializer')->serialize($payload, 'json');                         //Met au bon format
+        $resp_payload = json_decode($resp_data);                                                //Decodage string to json
+
+        //Mise en forme du contenu --------
+        $resp_content_json = array(
+            'type' => $controller_name,
+            'code' => $code,
+            'description' => $description,
+            'payload' => $resp_payload
         );
+        $resp_jwt = JWT::encode($resp_content_json,'toto');          //On le met au format JWT
+        $resp_jwt_json = $this->json(array(
+            'jwt'=> $resp_jwt
+        ));                                                         // Creation du JSON contenant jwt: token_jwt
+        return $resp_jwt_json;                                     //Envoi du token jwt
     }
 
 
@@ -242,12 +293,21 @@ class DiscussionsController extends AbstractController
             'status' => 'connected',
         );
 
-        return $this->json(array(
-                'type' => $controller_name,
-                'code' => $code,
-                'description' => $description,
-                'payload' => $payload
-            )
+        //CREATE RESPONSE ----------------------------------------------------------------------------------------------------------------------------
+        $resp_data = $this->get('serializer')->serialize($payload, 'json');                         //Met au bon format
+        $resp_payload = json_decode($resp_data);                                                //Decodage string to json
+
+        //Mise en forme du contenu --------
+        $resp_content_json = array(
+            'type' => $controller_name,
+            'code' => $code,
+            'description' => $description,
+            'payload' => $resp_payload
         );
+        $resp_jwt = JWT::encode($resp_content_json,'toto');          //On le met au format JWT
+        $resp_jwt_json = $this->json(array(
+            'jwt'=> $resp_jwt
+        ));                                                         // Creation du JSON contenant jwt: token_jwt
+        return $resp_jwt_json;                                     //Envoi du token jwt
     }
 }
