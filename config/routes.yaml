@@ -39,10 +39,10 @@ discussions_list:
     path:  /discussions/list
     controller: App\Controller\DiscussionsController::discussions_list
 
-discussions_getmessages:
+messages_getmessages:
     path:  /discussions/get-messages
-    controller: App\Controller\DiscussionsController::discussions_getmessages
+    controller: App\Controller\MessagesController::messages_getmessages
 
-discussions_postmessage:
+messages_postmessage:
     path:  /discussions/post-message
-    controller: App\Controller\DiscussionsController::discussions_postmessage
+    controller: App\Controller\MessagesController::messages_postmessage

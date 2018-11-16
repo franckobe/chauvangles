@@ -26,7 +26,7 @@ class MembersController extends AbstractController
      * @Route("/members/get-all", name="members_all")
      * @return \Symfony\Component\HttpFoundation\JsonResponse|Response
      */
-    public function members_all()
+    public function members_all(): Response
     {
         $controller_name="error";
         $error = "E0003";
@@ -79,7 +79,7 @@ class MembersController extends AbstractController
      * @Route("/members/get-online", name="members_online")
      * @return \Symfony\Component\HttpFoundation\JsonResponse|Response
      */
-    public function members_online()
+    public function members_online(): Response
     {
         $controller_name="error";
         $error = "E0003";

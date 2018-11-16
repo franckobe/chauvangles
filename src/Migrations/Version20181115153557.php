@@ -8,7 +8,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20181108150646 extends AbstractMigration
+final class Version20181115153557 extends AbstractMigration
 {
     public function up(Schema $schema) : void
     {
@@ -19,7 +19,7 @@ final class Version20181108150646 extends AbstractMigration
         $this->addSql('CREATE TABLE `group` (id INT AUTO_INCREMENT NOT NULL, date_creation DATETIME NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB');
         $this->addSql('CREATE TABLE group_message (id INT AUTO_INCREMENT NOT NULL, sender_id INT NOT NULL, group__id INT NOT NULL, content LONGTEXT NOT NULL, date_emission DATETIME NOT NULL, date_reception LONGTEXT NOT NULL, date_read DATETIME NOT NULL, UNIQUE INDEX UNIQ_30BD6473F624B39D (sender_id), UNIQUE INDEX UNIQ_30BD6473E5D32D49 (group__id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB');
         $this->addSql('CREATE TABLE private_message (id INT AUTO_INCREMENT NOT NULL, sender_id INT NOT NULL, receiver_id INT NOT NULL, content LONGTEXT NOT NULL, date_emission DATETIME NOT NULL, date_reception DATETIME NOT NULL, date_read DATETIME NOT NULL, UNIQUE INDEX UNIQ_4744FC9BF624B39D (sender_id), UNIQUE INDEX UNIQ_4744FC9BCD53EDB6 (receiver_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE user (id INT AUTO_INCREMENT NOT NULL, email VARCHAR(180) NOT NULL, roles JSON NOT NULL, password VARCHAR(255) NOT NULL, api_token VARCHAR(255) DEFAULT NULL, UNIQUE INDEX UNIQ_8D93D649E7927C74 (email), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE user (id INT AUTO_INCREMENT NOT NULL, email VARCHAR(180) NOT NULL, roles JSON NOT NULL, password VARCHAR(255) NOT NULL, status TINYINT(1) NOT NULL, api_token VARCHAR(255) DEFAULT NULL, UNIQUE INDEX UNIQ_8D93D649E7927C74 (email), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB');
         $this->addSql('CREATE TABLE users_groups (user_id INT NOT NULL, group_id INT NOT NULL, INDEX IDX_FF8AB7E0A76ED395 (user_id), INDEX IDX_FF8AB7E0FE54D947 (group_id), PRIMARY KEY(user_id, group_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB');
         $this->addSql('ALTER TABLE group_message ADD CONSTRAINT FK_30BD6473F624B39D FOREIGN KEY (sender_id) REFERENCES user (id)');
         $this->addSql('ALTER TABLE group_message ADD CONSTRAINT FK_30BD6473E5D32D49 FOREIGN KEY (group__id) REFERENCES `group` (id)');

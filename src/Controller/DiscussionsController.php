@@ -24,7 +24,7 @@ class DiscussionsController extends AbstractController
      * @Route("/discussions/get-or-create", name="discussions_getcreate")
      * @return \Symfony\Component\HttpFoundation\JsonResponse|Response
      */
-    public function discussions_getcreate()
+    public function discussions_getcreate(): Response
     {
         //VARIABLE ERREUR -----------------------------------------------------------
         $controller_name="error";
@@ -55,6 +55,23 @@ class DiscussionsController extends AbstractController
         //  IF DISCUSSION_NAME existe pas : IF MEMBERS NOT DEFINE : RETURN ERREUR E0004 no member list
         //  IF DISCUSSION_NAME existe pas : IF MEMBERS IS DEFINE (+ de 9 membre) : RETURN ERREUR E0004 too much poeple
         //  IF DISCUSSION_NAME existe pas : SINON la discussion est créée et les membres ajoutés : RETURN T0007
+
+        $request_str = $this->container->get('request_stack')->getCurrentRequest()->getContent(); //STRING
+        $request_json = json_decode($request_str); //object JSON                                          //Decodage string to json
+        $request_token = $request_json->token;                                      //Decodage string to json
+        $request_discussionName = $request_json->discussionName;                                      //Decodage string to json
+        $request_members = $request_json->members;
+
+        return new Response($this->json(($request_members)));
+
+
+
+
+
+
+
+
+
 
 
 
@@ -97,7 +114,7 @@ class DiscussionsController extends AbstractController
      * @Route("/discussions/add-member", name="discussions_addmember")
      * @return \Symfony\Component\HttpFoundation\JsonResponse|Response
      */
-    public function discussions_addmember()
+    public function discussions_addmember(): Response
     {
         $controller_name="error";
         $error2 = "E0005";
@@ -144,7 +161,7 @@ class DiscussionsController extends AbstractController
      * @Route("/discussions/leave", name="discussions_leave")
      * @return \Symfony\Component\HttpFoundation\JsonResponse|Response
      */
-    public function discussions_leave()
+    public function discussions_leave(): Response
     {
         $controller_name="error";
         $error = "E0007";
@@ -191,7 +208,7 @@ class DiscussionsController extends AbstractController
      * @Route("/discussions/list", name="discussions_list")
      * @return \Symfony\Component\HttpFoundation\JsonResponse|Response
      */
-    public function discussions_list()
+    public function discussions_list(): Response
     {
         $controller_name = "discussion";
         $code = "T0011";
@@ -226,93 +243,4 @@ class DiscussionsController extends AbstractController
         return $resp_jwt_json;                                     //Envoi du token jwt
     }
 
-    /**
-     * @Route("/discussions/get-messages", name="discussions_getmessages")
-     * @return \Symfony\Component\HttpFoundation\JsonResponse|Response
-     */
-    public function discussions_getmessages()
-    {
-        $controller_name="error";
-        $error = "E0009";
-        $description_error="Vous ne pouvez pas réaliser cette opération car la discussion n'existe pas ou que vous n'en faites pas partie";
-
-        $controller_name = "discussion";
-        $code = "T0006";
-        $description = "Récupération d'une discussion existante";
-
-        //CONDITION :
-        //  IF SESSIONS TOKEN existe
-        //  IF USER ACCESS DENIED DISCUSS: RETURN E0009
-        //  IF MessageNumber NOT DEFINE : RETURN 30 ou 50 message
-        //  RETURN MESSAGE LIST with same format GET_OR_CREATE T0006
-
-        $payloadT0006 = array(
-            'id' => 'discussionId as StringOrInt',
-            'label' => 'discussionLabel as String',
-            'status' => 'connected',
-            'lastMessages' => array(
-                'author' => 'authorLogin as String',
-                'message' => 'message as StringOrBase64',
-                'dateTime' => 'date as ISODateTime',
-            )
-        );
-
-        //CREATE RESPONSE ----------------------------------------------------------------------------------------------------------------------------
-        $resp_data = $this->get('serializer')->serialize($payloadT0006, 'json');                         //Met au bon format
-        $resp_payload = json_decode($resp_data);                                                //Decodage string to json
-
-        //Mise en forme du contenu --------
-        $resp_content_json = array(
-            'type' => $controller_name,
-            'code' => $code,
-            'description' => $description,
-            'payload' => $resp_payload
-        );
-        $resp_jwt = JWT::encode($resp_content_json,'toto');          //On le met au format JWT
-        $resp_jwt_json = $this->json(array(
-            'jwt'=> $resp_jwt
-        ));                                                         // Creation du JSON contenant jwt: token_jwt
-        return $resp_jwt_json;                                     //Envoi du token jwt
-    }
-
-
-    /**
-     * @Route("/discussions/post-message", name="discussions_postmessage")
-     * @return \Symfony\Component\HttpFoundation\JsonResponse|Response
-     */
-    public function discussions_postmessage()
-    {
-        $controller_name="error";
-        $error = "E0009";
-        $description_error="Vous ne pouvez pas réaliser cette opération car la discussion n'existe pas ou que vous n'en faites pas partie";
-
-        $controller_name = "discussion";
-        $code = "T0012";
-        $description = "Liste des utilisateurs connectés";
-
-        //CONDITION :
-        //  IF SESSIONS TOKEN existe
-        //  IF USER ACCESS DENIED DISCUSS : E0009
-        //  ENREGISTRER MESSAGE POUR DISCUSS AVEC : LOGIN USER ID / DATE HEURE etc..
-        //  RETURN T0012
-
-        $payload = null;
-
-        //CREATE RESPONSE ----------------------------------------------------------------------------------------------------------------------------
-        $resp_data = $this->get('serializer')->serialize($payload, 'json');                         //Met au bon format
-        $resp_payload = json_decode($resp_data);                                                //Decodage string to json
-
-        //Mise en forme du contenu --------
-        $resp_content_json = array(
-            'type' => $controller_name,
-            'code' => $code,
-            'description' => $description,
-            'payload' => $resp_payload
-        );
-        $resp_jwt = JWT::encode($resp_content_json,'toto');          //On le met au format JWT
-        $resp_jwt_json = $this->json(array(
-            'jwt'=> $resp_jwt
-        ));                                                         // Creation du JSON contenant jwt: token_jwt
-        return $resp_jwt_json;                                     //Envoi du token jwt
-    }
 }
