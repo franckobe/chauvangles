@@ -4,10 +4,12 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ManyToMany;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\GroupRepository")
+ * @ORM\Table(name="Group")
+ * @UniqueEntity(fields="discussionName", message="Discussion Name is already taken.")
  */
 class Group
 {
@@ -19,17 +21,6 @@ class Group
     private $id;
 
     /**
-     * @ORM\Column(type="datetime")
-     */
-    private $date_creation;
-
-    /**
-     * Many Groups have Many Users.
-     * @ManyToMany(targetEntity="User", mappedBy="groups")
-     */
-    private $users;
-
-    /**
      * @ORM\Column(type="integer")
      */
     private $creator;
@@ -39,6 +30,16 @@ class Group
      */
     private $discussionName;
 
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $date_creation;
+
+    /**
+     * Many Groups have Many Users.
+     * @ManyToMany(targetEntity="User", mappedBy="groups")
+     */
+    private $users;
 
     public function getId(): ?int
     {
