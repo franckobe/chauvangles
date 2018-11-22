@@ -22,8 +22,8 @@ class UserController extends AbstractController
     }
 
     /**
-     *
-     *
+     * @Route("/members/get-all", name="user")
+     */
     public function getAllUsers()
     {
         $encoders = array(new JsonEncoder());
@@ -37,6 +37,4 @@ class UserController extends AbstractController
 
         return new Response($jsonContent);
     }
-
-*/
 }
