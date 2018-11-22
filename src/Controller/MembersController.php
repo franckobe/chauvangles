@@ -8,7 +8,6 @@
 
 namespace App\Controller;
 
-use JWT\Authentication\JWT;
 use App\Form\Registration;
 use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -51,27 +50,21 @@ class MembersController extends AbstractController
 
             //-------------FETCH RESULTs---------------------------------------------------
 
-            $data = $this->getDoctrine()
+            $repository = $this->getDoctrine()
                                 ->getRepository(User::class)
                                 ->findAll();
+            $repository = $this->get('serializer')->serialize($repository, 'json');
+            $response = new Response($repository);
+            $response = json_decode($response->getContent(), JSON_UNESCAPED_SLASHES);
 
-            //CREATE RESPONSE ----------------------------------------------------------------------------------------------------------------------------
-            $resp_data = $this->get('serializer')->serialize($data, 'json');                         //Met au bon format
-            $resp_payload = json_decode($resp_data);                                                //Decodage string to json
-            $resp_payload[0]->password="";
-
-            //Mise en forme du contenu --------
-            $resp_content_json = array(
-                'type' => $controller_name,
-                'code' => $code,
-                'description' => $description,
-                'payload' => $resp_payload
+            //SEND THE RESPONSE --------------------------------------------------
+            return $this->json(array(
+                    'type' => $controller_name,
+                    'code' => $code,
+                    'description' => $description,
+                    'payload' => $response
+                )
             );
-            $resp_jwt = JWT::encode($resp_content_json,'toto');          //On le met au format JWT
-            $resp_jwt_json = $this->json(array(
-                'jwt'=> $resp_jwt
-            ));                                                         // Creation du JSON contenant jwt: token_jwt
-            return $resp_jwt_json;                                     //Envoi du token jwt
         }
     }
 
@@ -107,26 +100,21 @@ class MembersController extends AbstractController
 
             //-------------FETCH RESULTs---------------------------------------------------
             $critera = array("status"=>1);
-            $data = $this->getDoctrine()
+            $repository = $this->getDoctrine()
                 ->getRepository(User::class)
                 ->findBy($critera, null, 100); //status = online, null, 100 membres max
+            $repository = $this->get('serializer')->serialize($repository, 'json');
+            $response = new Response($repository);
+            $response = json_decode($response->getContent(), JSON_UNESCAPED_SLASHES);
 
-            //CREATE RESPONSE ----------------------------------------------------------------------------------------------------------------------------
-            $resp_data = $this->get('serializer')->serialize($data, 'json');                         //Met au bon format
-            $resp_payload = json_decode($resp_data);                                                //Decodage string to json
-
-            //Mise en forme du contenu --------
-            $resp_content_json = array(
-                'type' => $controller_name,
-                'code' => $code,
-                'description' => $description,
-                'payload' => $resp_payload
+            //SEND THE RESPONSE --------------------------------------------------
+            return $this->json(array(
+                    'type' => $controller_name,
+                    'code' => $code,
+                    'description' => $description,
+                    'payload' => $response
+                )
             );
-            $resp_jwt = JWT::encode($resp_content_json,'toto');          //On le met au format JWT
-            $resp_jwt_json = $this->json(array(
-                'jwt'=> $resp_jwt
-            ));                                                         // Creation du JSON contenant jwt: token_jwt
-            return $resp_jwt_json;                                     //Envoi du token jwt
         }
     }
 }

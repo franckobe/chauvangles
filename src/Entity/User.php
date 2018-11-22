@@ -46,6 +46,18 @@ class User implements UserInterface
      */
     private $status;
 
+    /**
+     * Many Users have Many Groups.
+     * @ManyToMany(targetEntity="Group", inversedBy="users")
+     * @JoinTable(name="users_groups")
+     */
+    private $groups;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $apiToken;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -101,7 +113,7 @@ class User implements UserInterface
     {
         $this->roles = $roles;
 
-          return $this;
+        return $this;
     }
 
     /**
@@ -136,21 +148,6 @@ class User implements UserInterface
         // $this->plainPassword = null;
     }
 
-    /**
-     * Many Users have Many Groups.
-     * @ManyToMany(targetEntity="Group", inversedBy="users")
-     * @JoinTable(name="users_groups")
-     */
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    public $apiToken;
-
-    public function __construct() {
-        $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
     public function getApiToken(): ?string
     {
         return $this->apiToken;
@@ -161,5 +158,9 @@ class User implements UserInterface
         $this->apiToken = $apiToken;
 
         return $this;
+    }
+
+    public function __construct() {
+        $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
     }
 }
