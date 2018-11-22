@@ -27,7 +27,7 @@ class User implements UserInterface
      * @Assert\NotBlank()
      * @Assert\Email()
      */
-    public $email;
+    private $email;
 
     /**
      * @ORM\Column(type="json")
@@ -141,7 +141,6 @@ class User implements UserInterface
      * @ManyToMany(targetEntity="Group", inversedBy="users")
      * @JoinTable(name="users_groups")
      */
-    private $groups;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
