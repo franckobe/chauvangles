@@ -43,5 +43,9 @@ services:
             class: App\EventListener\AuthenticationListener
             tags:
                 - { name: kernel.event_listener, event: lexik_jwt_authentication.on_jwt_expired, method: onJWTExpired }
+#    app.listner.onLogoutSuccess:
+#            class: App\Controller\SecurityController\logout
+#                - { name: kernel.event_listener, event: onLogoutSuccess, method: logout }
     sensio_framework_extra.view.listener:
         alias: Sensio\Bundle\FrameworkExtraBundle\EventListener\TemplateListener
+#

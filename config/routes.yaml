@@ -1,19 +1,18 @@
-index:
-    path: /
-    controller: App\Controller\HomeController::index
-
+#index:
+#    path: /
+#    controller: App\Controller\HomeController::index
 
 dir:
     path: /dir
     controller: App\Controller\HomeController::DirNote
 
-app_logout:
+logout:
     path: /logout
     controller: App\Controller\SecurityController::logout
 
-#api:
-#    path: /api
-#    controller: App\Controller\SecurityController::api
+api:
+    path: /api
+    controller: App\Controller\SecurityController::api
 
 members_all:
     path: /members/get-all
@@ -34,7 +33,6 @@ discussions_addmember:
 discussions_leave:
     path: /discussions/leave
     controller: App\Controller\DiscussionsController::discussions_leave
-
 discussions_list:
     path:  /discussions/list
     controller: App\Controller\DiscussionsController::discussions_list

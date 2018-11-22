@@ -27,7 +27,7 @@ class User implements UserInterface
      * @Assert\NotBlank()
      * @Assert\Email()
      */
-    private $email;
+    public $email;
 
     /**
      * @ORM\Column(type="json")
@@ -146,7 +146,7 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $apiToken;
+    public $apiToken;
 
     public function __construct() {
         $this->groups = new \Doctrine\Common\Collections\ArrayCollection();

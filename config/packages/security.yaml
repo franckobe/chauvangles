@@ -22,14 +22,14 @@ security:
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
             logout:
-                path:
-                    app_logout
+                path:   loginout
+#                target: /logout
 
         api:
             pattern:  ^/api
             stateless: true
             anonymous: false
-
+#            provider: entity_provider
             guard:
                 authenticators:
                     - lexik_jwt_authentication.jwt_token_authenticator
@@ -46,5 +46,6 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/logout, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }

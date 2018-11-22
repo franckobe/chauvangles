@@ -7,18 +7,30 @@ use Lexik\Bundle\JWTAuthenticationBundle\Event\AuthenticationSuccessEvent;
 use Lexik\Bundle\JWTAuthenticationBundle\Event\AuthenticationFailureEvent;
 use Lexik\Bundle\JWTAuthenticationBundle\Event\JWTExpiredEvent;
 use Lexik\Bundle\JWTAuthenticationBundle\Response\JWTAuthenticationFailureResponse;
-
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 //use Symfony\Component\Security\Core\Event\AuthenticationFailureEvent;
 
-class AuthenticationListener
+class AuthenticationListener extends AbstractController
 {
     public function onAuthenticationSuccessResponse(AuthenticationSuccessEvent $event)
     {
-        $event->setData([JWT::encode(['type' => "authentication",
+        $user = $this->getUser();
+        $token = $event->getData();
+        $user->setApiToken($token['token']);
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+        $message = $event->setData([JWT::encode(['type' => "authentication",
             'code' => 'T0001',
             'description' => 'Vous êtes maintenant connecté',
-            'payload' => $event->getData()], 'toto')]);
+            'payload' => $token], 'toto')]);
+
+        return $this->json(array('jwt' => $message));
+
     }
 
     public function onAuthenticationFailureResponse(AuthenticationFailureEvent $event)
