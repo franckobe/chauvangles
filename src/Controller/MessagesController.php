@@ -11,6 +11,8 @@ namespace App\Controller;
 use JWT\Authentication\JWT;
 use App\Form\Registration;
 use App\Entity\User;
+use App\Entity\Group;
+use App\Entity\GroupMessage;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -26,6 +28,25 @@ class MessagesController extends AbstractController
      */
     public function messages_getmessages(): Response
     {
+        //On recupere la requete utilisateur
+        $request_str = $this->container->get('request_stack')->getCurrentRequest()->getContent(); //STRING
+        $request_json = json_decode($request_str, true); //object JSON
+        foreach ($request_json as $key => $value){
+            if ($key == "token") {
+                $request_token = $value;
+            } else if ($key == "discussionId") {
+                $request_discussionId = $value;
+            } else if ($key == "messageNumber") {
+                $request_messageNumber = $value;
+            } else {
+//                $request_token = "token string";
+//                $request_discussionId = "discussionId string";
+//                $request_messageNumber = "messageNumber integer";
+//                return new Response("La requête n'est pas bien constituée : \"$request_token : $request_discussionId : $request_messageNumber\"");
+            }
+        }
+//        return new Response("La requête est bien constituée : \"$request_token : $request_discussionId : $request_messageNumber\"");
+
         $controller_name="error";
         $error = "E0009";
         $description_error="Vous ne pouvez pas réaliser cette opération car la discussion n'existe pas ou que vous n'en faites pas partie";
@@ -36,8 +57,10 @@ class MessagesController extends AbstractController
 
         //CONDITION :
         //  IF SESSIONS TOKEN existe
+
         //  IF USER ACCESS DENIED DISCUSS: RETURN E0009
-        //  IF MessageNumber NOT DEFINE : RETURN 30 ou 50 message
+
+        //  IF MessageNumber NOT DEFINE : RETURN 50 message
         //  RETURN MESSAGE LIST with same format GET_OR_CREATE T0006
 
         $payloadT0006 = array(
@@ -76,6 +99,25 @@ class MessagesController extends AbstractController
      */
     public function messages_postmessage(): Response
     {
+        //On recupere la requete utilisateur
+        $request_str = $this->container->get('request_stack')->getCurrentRequest()->getContent(); //STRING
+        $request_json = json_decode($request_str, true); //object JSON
+        foreach ($request_json as $key => $value){
+            if ($key == "token") {
+                $request_token = $value;
+            } else if ($key == "discussionId") {
+                $request_discussionId = $value;
+            } else if ($key == "message") {
+                $request_message = $value;
+            } else {
+//                $request_token = "token string";
+//                $request_discussionId = "discussionId string";
+//                $request_message = "message string";
+//                return new Response("La requête n'est pas bien constituée : \"$request_token : $request_discussionId : $request_message\"");
+            }
+        }
+//        return new Response("La requête est bien constituée : \"$request_token : $request_discussionId : $request_message\"");
+
         $controller_name="error";
         $error = "E0009";
         $description_error="Vous ne pouvez pas réaliser cette opération car la discussion n'existe pas ou que vous n'en faites pas partie";
