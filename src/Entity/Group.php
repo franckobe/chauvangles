@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ManyToMany;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\GroupRepository")
@@ -30,7 +31,6 @@ class Group
 
     /**
      * @ORM\Column(type="integer")
-     * @Assert\NotBlank()
      */
     private $creator;
 
@@ -56,7 +56,7 @@ class Group
         return $this;
     }
 
-    public function setCreator(\int $creatorId): self
+    public function setCreator( $creatorId): self
     {
         $this->creator = $creatorId;
         return $this;
@@ -67,15 +67,15 @@ class Group
         return $this->creator;
     }
 
-    public function setName(\string $discussName): self
+    public function setName( $discussName): self
     {
         $this->discussionName = $discussName;
         return $this;
     }
 
-    public function getName(\string $discussName): self
+    public function getName(): self
     {
-        return $this->$discussName;
+        return $this->discussionName;
     }
 
     public function __construct() {
