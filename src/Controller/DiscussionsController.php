@@ -28,11 +28,9 @@ class DiscussionsController extends AbstractController
     {
         //VARIABLE ERREUR -----------------------------------------------------------
         $controller_name="error";
-
         //ERREUR 1---------------------
         $error = "E0004";
         $description_error="Une discussion doit décrire des membres";
-
         //ERREUR 2---------------------
         $error2 = "E0005";
         $description_error2="Trop de members tuent les membres";
@@ -42,10 +40,40 @@ class DiscussionsController extends AbstractController
         //FCT 1 -------------------------
         $code = "T0006";
         $description = "Récupération d'une discussion existante";
-
         //FCT 2 -------------------------
         $code2 = "T0007";
         $description2 = "Création d'une discussion";
+
+        //Recuperation de la requete utilisateur
+        $request_str = $this->container->get('request_stack')->getCurrentRequest()->getContent(); //STRING
+        $request_json = json_decode($request_str,true); //object JSON
+        foreach ($request_json as $key => $value)
+        {
+            if($key == "token")
+            {
+                $request_token = $value;
+            }
+            else if ($key == "discussionName")
+            {
+                $request_discussionName = $value;
+            }
+            else if ($key == "members")
+            {
+                $request_members = $value;
+                foreach ($request_members as $id => $val)
+                {
+                   // $request_members1 = $val;
+                }
+            }
+            else
+            {
+                $request_token = "error";
+                $request_discussionName = "error";
+                $request_members = "error";
+                return new Response("La requête n'est pas bien constituée");
+            }
+        }
+//        return new Response($request_token);
 
 
         //CONDITION :
@@ -55,15 +83,6 @@ class DiscussionsController extends AbstractController
         //  IF DISCUSSION_NAME existe pas : IF MEMBERS NOT DEFINE : RETURN ERREUR E0004 no member list
         //  IF DISCUSSION_NAME existe pas : IF MEMBERS IS DEFINE (+ de 9 membre) : RETURN ERREUR E0004 too much poeple
         //  IF DISCUSSION_NAME existe pas : SINON la discussion est créée et les membres ajoutés : RETURN T0007
-
-        $request_str = $this->container->get('request_stack')->getCurrentRequest()->getContent(); //STRING
-        $request_json = json_decode($request_str); //object JSON                                          //Decodage string to json
-        $request_token = $request_json->token;                                      //Decodage string to json
-        $request_discussionName = $request_json->discussionName;                                      //Decodage string to json
-        $request_members = $request_json->members;
-
-        return new Response($this->json(($request_members)));
-
 
 
 
@@ -154,7 +173,9 @@ class DiscussionsController extends AbstractController
         $resp_jwt_json = $this->json(array(
             'jwt'=> $resp_jwt
         ));                                                         // Creation du JSON contenant jwt: token_jwt
+
         return $resp_jwt_json;                                     //Envoi du token jwt
+
     }
 
     /**
