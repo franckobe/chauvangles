@@ -94,10 +94,10 @@ class DiscussionsController extends AbstractController
                         'id' => $request_discussionName,
                         'label' => $request_discussionName
                     );
-                    $manager = ObjectManager::class;
+                    $manager = $this->getDoctrine()->getManager();
                     $group = new Group();
                     $group->setName($request_discussionName);
-                    $group->setCreator("creator_test"); // PRENDRE LE CREATOR DU TOKEN <----
+                    $group->setCreator("creator_test"); // PRENDRE L'id de l'utilisateur qui est dans TOKEN <----
                     $group->setDateCreation(new \DateTime());
                     $manager->persist($group);
                     $manager->flush();
