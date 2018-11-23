@@ -38,7 +38,7 @@ class Group
 
     /**
      * Many Groups have Many Users.
-     * @ManyToMany(targetEntity="User", mappedBy="groups")
+     * @ManyToMany(targetEntity="User", mappedBy="groups", cascade={"persist"})
      */
     private $users;
 
@@ -84,5 +84,10 @@ class Group
         $this->users = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
+    public function addUser(User $users)
+    {
+        $this->users[] = $users;
+        return $this;
+    }
 
 }

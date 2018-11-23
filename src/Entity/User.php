@@ -50,7 +50,14 @@ class User implements UserInterface
     /**
      * Many Users have Many Groups.
      * @ManyToMany(targetEntity="Group", inversedBy="users")
-     * @JoinTable(name="users_groups")
+     * @JoinTable(name="users_groups",
+     *  joinColumns={
+     *      @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     *    },
+     *    inverseJoinColumns={
+     *      @ORM\JoinColumn(name="group_id", referencedColumnName="id")
+     *    }
+     * )
      */
     private $groups;
 
@@ -163,5 +170,11 @@ class User implements UserInterface
 
     public function __construct() {
         $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    public function addGroup(Group $groups)
+    {
+        $this->groups[] = $groups;
+        return $this;
     }
 }

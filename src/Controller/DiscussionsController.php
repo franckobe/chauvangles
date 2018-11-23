@@ -76,6 +76,13 @@ class DiscussionsController extends AbstractController
             {
                 //  IF MEMBERS IS DEFINE (+ de 9 membre) : RETURN ERREUR E0004 too much poeple
                 $count = count($request_members);
+                $users = [];
+                foreach ($request_members as $members){
+                    array_push($users, $this->getDoctrine()
+                        ->getRepository(User::class)
+                        ->find($members));
+
+                }
 
                 if ($count >= 9) {
                     $controller_name = "error";
@@ -91,12 +98,15 @@ class DiscussionsController extends AbstractController
                         'id' => $request_discussionName,
                         'label' => $request_discussionName
                     );
-
                     $manager = $this->getDoctrine()->getManager();
                     $group = new Group();
                     $group->setName($request_discussionName);
                     $group->setCreator($this->getUser()->getId()); // PRENDRE L'id de l'utilisateur qui est dans TOKEN <----
                     $group->setDateCreation(new \DateTime());
+                    foreach($users as $user){
+                        $group->addUser($user);
+                        $user->addGroup($group);
+                    }
                     $manager->persist($group);
                     $manager->flush();
                 }
