@@ -4,12 +4,12 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\Registration;
+use JWT\Authentication\JWT;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
 {
@@ -19,39 +19,53 @@ class SecurityController extends AbstractController
     public function login(): Response
     {
         $user = $this->getUser();
-
-        return $this->json(array(
-            'type' => "authentication",
-            'code' => 'T0001',
-            'description' => 'Vous êtes maintenant connecté',
-        ));
+//        $user->setApiToken('test');
+//
+//        return $this->json(array(
+//            'type' => "authentication",
+//            'code' => 'T0001',
+//            'description' => 'Vous êtes maintenant connecté',
+//        ));
     }
 
-//    public function api()
-//    {
-//        return new Response(sprintf('Logged in as %s', $this->getUser()->getUsername()));
-//    }
+
+    public function api()
+    {
+        return new Response(sprintf('Logged in as %s', $this->getUser()->getUsername()));
+    }
 
     /**
-     * @Route("/logout", name="app_logout")
-     * @return \Symfony\Component\HttpFoundation\JsonResponse|Response
+     * @Route("/loginout", name="loginout")
      */
-    public function logout(): Response
+    public function logout()
     {
-        $user = $this->getUser();
-        $user = $user->getUsername();
+//          $userEmail = $this->getUser()->email;
+//          $user = $this->getUser()->apiToken;
+        $user = true;
+        if ($user){
+            $type = "authentication";
+            $code = "T0003";
+            $description = "L'utilisateur a été déconnecté";
+        }else{
+            $type = "error";
+            $code = "E0003";
+            $description = "Bail non renouvelable";
+        }
 
-        $controller_name = "authentication";
-        $code = "T0003";
-        $description = "$user a été déconnecté";
-
-        return $this->json(array(
-                'type' => $controller_name,
-                'code' => $code,
-                'description' => $description,
-            )
+        $resp_content_json = array(
+            'type' => $type,
+            'code' => $code,
+            'description' => $description,
         );
+
+        $resp_jwt = JWT::encode($resp_content_json,'toto');
+        $resp_jwt_json = $this->json(array(
+            'jwt'=> $resp_jwt
+        ));
+
+        return $resp_jwt_json;
     }
+
 
     /**
      * @Route("/register", name="app_register")

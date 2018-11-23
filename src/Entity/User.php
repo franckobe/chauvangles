@@ -114,7 +114,7 @@ class User implements UserInterface
     {
         $this->roles = $roles;
 
-          return $this;
+        return $this;
     }
 
     /**
