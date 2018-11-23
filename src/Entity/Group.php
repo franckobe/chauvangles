@@ -8,30 +8,31 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\GroupRepository")
- * @ORM\Table(name="Group")
+ * @ORM\Table(name="`Group`")
  * @UniqueEntity(fields="discussionName", message="Discussion Name is already taken.")
  */
 class Group
 {
     /**
+     * @ORM\Id
      * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(name="creator",type="integer")
      */
     private $creator;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(name="discussionName",type="string")
      */
     private $discussionName;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(name="date_creation",type="datetime")
      */
     private $date_creation;
 
@@ -82,4 +83,6 @@ class Group
     public function __construct() {
         $this->users = new \Doctrine\Common\Collections\ArrayCollection();
     }
+
+
 }

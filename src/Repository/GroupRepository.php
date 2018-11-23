@@ -19,6 +19,19 @@ class GroupRepository extends ServiceEntityRepository
         parent::__construct($registry, Group::class);
     }
 
+    public function findDiscussName($name): array
+    {
+        // automatically knows to select Products
+        // the "p" is an alias you'll use in the rest of the query
+        $qb = $this->createQueryBuilder('d')
+            ->setParameter('name', $name)
+            ->andWhere('d.discussionName = :name')
+            ->getQuery();
+//        $qb->setMaxResults(1)->getOneOrNullResult();
+
+        return $qb->execute();
+    }
+
 //    /**
 //     * @return Group[] Returns an array of Group objects
 //     */

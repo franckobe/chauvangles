@@ -69,6 +69,7 @@ class DiscussionsController extends AbstractController
                 $controller_name="error";
                 $code = "E0004";
                 $description="Une discussion doit décrire des membres";
+                $payload = "";
             }
             else if ($request_members)
             {
@@ -76,6 +77,7 @@ class DiscussionsController extends AbstractController
                 $controller_name="error";
                 $code = "E0005";
                 $description="Trop de members tuent les membres";
+                $payload = "";
             }
             else
             {
@@ -98,7 +100,6 @@ class DiscussionsController extends AbstractController
             $payload = array(
                 'id' => 'discussionId as StringOrInt',
                 'label' => 'discussionLabel as String',
-                'status' => 'connected',
                 'lastMessages' => array(
                     'author' => 'authorLogin as String',
                     'message' => 'message as StringOrBase64',
