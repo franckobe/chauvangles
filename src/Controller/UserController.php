@@ -22,10 +22,11 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/members/get-all", name="user")
+     * @Route("/members/get-all-controller", name="user")
      */
     public function getAllUsers()
     {
+//        die('pute');
         $encoders = array(new JsonEncoder());
         $normalizers = array(new ObjectNormalizer());
         $serializer = new Serializer($normalizers, $encoders);

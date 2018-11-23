@@ -11,6 +11,7 @@ namespace App\Controller;
 use App\Form\Registration;
 use App\Entity\User;
 use App\Repository\UserRepository;
+use JWT\Authentication\JWT;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -18,6 +19,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 class MembersController extends AbstractController
 {
@@ -51,21 +55,29 @@ class MembersController extends AbstractController
 
             //-------------FETCH RESULTs---------------------------------------------------
 
-            $repository = $this->getDoctrine()
-                                ->getRepository(User::class)
-                                ->findAll();
-            $repository = $this->get('serializer')->serialize($repository, 'json');
-            $response = new Response($repository);
-            $response = json_decode($response->getContent(), JSON_UNESCAPED_SLASHES);
+            $users = $this->getDoctrine()
+                ->getRepository(User::class)
+                ->findAll();
 
             //SEND THE RESPONSE --------------------------------------------------
-            return $this->json(array(
-                    'type' => $controller_name,
-                    'code' => $code,
-                    'description' => $description,
-                    'payload' => $response
-                )
+            $resp_data = $this->get('serializer')->serialize($users, 'json');                         //Met au bon format
+            $resp_payload = json_decode($resp_data);                                                //Decodage string to json
+            $resp_payload[0]->password="";
+
+            //Mise en forme du contenu --------
+            $resp_content_json = array(
+                'type' => $controller_name,
+                'code' => $code,
+                'description' => $description,
+                'payload' => $resp_payload
             );
+
+            $resp_jwt = JWT::encode($resp_content_json,'toto');          //On le met au format JWT
+            $resp_jwt_json = $this->json(array(
+                'jwt'=> $resp_jwt
+            ));
+
+            return $resp_jwt_json;
         }
     }
 
@@ -96,26 +108,35 @@ class MembersController extends AbstractController
             $code = "T0005";
             $description = "Liste des utilisateurs connectés";
 
+            //-------------FETCH RESULTs---------------------------------------------------
             //CONDITION :
             //  If TOKEN EXIST
             //  If TOKEN IS VALID
+
             $users = $this->getDoctrine()
                 ->getRepository(User::class)
                 ->findByExampleField();
 
-            //-------------FETCH RESULTs---------------------------------------------------
-            $repository = $this->get('serializer')->serialize($users, 'json');
-            $response = new Response($repository);
-            $response = json_decode($response->getContent(), JSON_UNESCAPED_SLASHES);
-
             //SEND THE RESPONSE --------------------------------------------------
-            return $this->json(array(
-                    'type' => $controller_name,
-                    'code' => $code,
-                    'description' => $description,
-                    'payload' => $response
-                )
+            $resp_data = $this->get('serializer')->serialize($users, 'json');                         //Met au bon format
+            $resp_payload = json_decode($resp_data);                                                //Decodage string to json
+            $resp_payload[0]->password="";
+
+            //Mise en forme du contenu --------
+            $resp_content_json = array(
+                'type' => $controller_name,
+                'code' => $code,
+                'description' => $description,
+                'payload' => $resp_payload
             );
+
+            $resp_jwt = JWT::encode($resp_content_json,'toto');          //On le met au format JWT
+            $resp_jwt_json = $this->json(array(
+                'jwt'=> $resp_jwt
+            ));
+
+            return $resp_jwt_json;
+
         }
     }
 }
