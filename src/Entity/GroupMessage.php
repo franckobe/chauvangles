@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\GroupMessageRepository")
+ * @ORM\Table(name="`GroupMessage`")
  */
 class GroupMessage
 {

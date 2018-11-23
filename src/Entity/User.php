@@ -12,6 +12,7 @@ use Symfony\Component\Form\FormTypeInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
+ * @ORM\Table(name="`User`")
  */
 class User implements UserInterface
 {

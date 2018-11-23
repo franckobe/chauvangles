@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\PrivateMessageRepository")
+ * @ORM\Table(name="`PrivateMessage`")
  */
 class PrivateMessage
 {
