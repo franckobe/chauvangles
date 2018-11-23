@@ -13,27 +13,27 @@ class GroupMessage
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
+     * @ORM\Column(name="id",type="integer")
      */
     private $id;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(name="content",type="text")
      */
     private $content;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(name="date_emission",type="datetime")
      */
     private $date_emission;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(name="date_reception",type="text")
      */
     private $date_reception;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(name="date_read",type="datetime")
      */
     private $date_read;
 

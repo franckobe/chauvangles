@@ -18,6 +18,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\Persistence\ObjectManager;
 
 
 class DiscussionsController extends AbstractController
@@ -59,9 +61,8 @@ class DiscussionsController extends AbstractController
             ->getRepository(Group::class)
             ->findOneBy(['discussionName' => $request_discussionName]);
 
-//        return new Response($discuss_name_existing);
         //Discussion n'existe pas !
-        if (!$discuss_name_existing)
+        if (empty($discuss_name_existing))
         {
             //  IF MEMBERS NOT DEFINE : RETURN ERREUR E0004 no member list
             if (!$request_members)
@@ -74,21 +75,33 @@ class DiscussionsController extends AbstractController
             else if ($request_members)
             {
                 //  IF MEMBERS IS DEFINE (+ de 9 membre) : RETURN ERREUR E0004 too much poeple
-                $controller_name="error";
-                $code = "E0005";
-                $description="Trop de members tuent les membres";
-                $payload = "";
-            }
-            else
-            {
-                //  SINON la discussion est créée et les membres ajoutés : RETURN T0007
-                $controller_name = "discussion";
-                $code = "T0007";
-                $description = "Création d'une discussion";
-                $payload = array(
-                    'id' => 'discussionId as StringOrInt',
-                    'label' => 'discussionLabel as String'
-                );
+                $count = 0;
+                foreach ($request_members as $key => $value) {
+                    $count++;
+                }
+
+                if ($count > 9) {
+                    $controller_name = "error";
+                    $code = "E0005";
+                    $description = "Trop de members tuent les membres";
+                    $payload = "";
+                } else {
+                    //  SINON la discussion est créée et les membres ajoutés : RETURN T0007
+                    $controller_name = "discussion";
+                    $code = "T0007";
+                    $description = "Création d'une discussion";
+                    $payload = array(
+                        'id' => $request_discussionName,
+                        'label' => $request_discussionName
+                    );
+                    $manager = ObjectManager::class;
+                    $group = new Group();
+                    $group->setName($request_discussionName);
+                    $group->setCreator("creator_test"); // PRENDRE LE CREATOR DU TOKEN <----
+                    $group->setDateCreation(new \DateTime());
+                    $manager->persist($group);
+                    $manager->flush();
+                }
             }
         }
         else //Discussion Existe !
@@ -98,8 +111,8 @@ class DiscussionsController extends AbstractController
             $code = "T0006";
             $description = "Récupération d'une discussion existante";
             $payload = array(
-                'id' => 'discussionId as StringOrInt',
-                'label' => 'discussionLabel as String',
+                'id' => $request_discussionName,
+                'label' => $request_discussionName,
                 'lastMessages' => array(
                     'author' => 'authorLogin as String',
                     'message' => 'message as StringOrBase64',
@@ -164,6 +177,7 @@ class DiscussionsController extends AbstractController
 
         //CONDITION :
         //  IF SESSIONS TOKEN existe
+
         //  IF USER IS CREATEUR DISCUSSION / IF NOT : RETURN E006 not discussion creator
         //  IF USERS NUMBER < 9 : AJOUT DES MEMBRES + RETURN T0008
         //  IF USERS NUMBER + createur > 9 : RETURN E0005 too much people
