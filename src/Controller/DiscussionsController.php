@@ -13,6 +13,7 @@ use App\Form\Registration;
 use App\Entity\User;
 use App\Entity\Group;
 use App\Entity\GroupMessage;
+use function PHPSTORM_META\elementType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -24,6 +25,18 @@ use Doctrine\Common\Persistence\ObjectManager;
 
 class DiscussionsController extends AbstractController
 {
+    /**
+     * @return array of message
+     */
+    public function getLastMessages($request_discussionName)
+    {
+        $discuss_name_existing = $this->getDoctrine()
+            ->getRepository(GroupMessage::class)
+            ->findOneBy(['discussionName' => $request_discussionName]);
+
+        return array();
+    }
+
     /**
      * @Route("/discussions/get-or-create", name="discussions_getcreate")
      * @return \Symfony\Component\HttpFoundation\JsonResponse|Response
@@ -118,14 +131,16 @@ class DiscussionsController extends AbstractController
             $controller_name = "discussion";
             $code = "T0006";
             $description = "Récupération d'une discussion existante";
+            $messages = $this->getLastMessages($request_discussionName);
+            /*$messages = array(
+                'author' => 'authorLogin as String',
+                'message' => 'message as StringOrBase64',
+                'dateTime' => 'date as ISODateTime',
+            );*/
             $payload = array(
                 'id' => $request_discussionName,
                 'label' => $request_discussionName,
-                'lastMessages' => array(
-                    'author' => 'authorLogin as String',
-                    'message' => 'message as StringOrBase64',
-                    'dateTime' => 'date as ISODateTime',
-                )
+                'lastMessages' => $messages
             );
         }
 
@@ -173,30 +188,57 @@ class DiscussionsController extends AbstractController
         }
 //        return new Response("La requête est bien constituée : \"$request_token : $request_discussionId : $request_members[1]\"");
 
-        $controller_name="error";
-        $error2 = "E0005";
-        $description_error2="Trop de members tuent les membres";
-        $error = "E0006";
-        $description_error="Vous n'avez pas le droit d'effectuer cette manipulation pour cette discussion";
-
-        $controller_name = "discussion";
-        $code = "T0008";
-        $description = "Membre(s) ajouté(s) avec succès";
-
         //CONDITION :
-        //  IF SESSIONS TOKEN existe
+        //  IF SESSIONS TOKEN existe !!!!!!!!!!!!!
 
-        //  IF USER IS CREATEUR DISCUSSION / IF NOT : RETURN E006 not discussion creator
-        //  IF USERS NUMBER < 9 : AJOUT DES MEMBRES + RETURN T0008
-        //  IF USERS NUMBER + createur > 9 : RETURN E0005 too much people
+        $discuss_name_existing = $this->getDoctrine()
+            ->getRepository(Group::class)
+            ->findOneBy(['discussionName' => $request_discussionId]);
 
-        $payload = array(
-            'members' => array(
-                "userLogin as String",
-                "userLogin as String"
-            )
-        );
+        //Discussion n'existe pas !
+        if (!empty($discuss_name_existing))
+        {
+            //  IF USER IS CREATEUR DISCUSSION
+            if ($this->getUser()->getId() == $discuss_name_existing->getCreator()) {
+                //  IF USERS NUMBER < 9 : AJOUT DES MEMBRES + RETURN T0008
+                $count = count($request_members);
 
+                if ($count < 9) {
+                    $controller_name = "discussion";
+                    $code = "T0008";
+                    $description = "Membre(s) ajouté(s) avec succès";
+                    $payload = "YESS";
+                    //AJOUTER LE/LES MEMBRES DANS LA BDD
+
+                    /*
+                    $payload = array(
+                        'members' => array(
+                            "userLogin qui a été ajouté",
+                            "userLogin qui a été ajouté"
+                        )
+                    );*/
+                } else {
+                    //  IF USERS NUMBER + createur > 9 : RETURN E0005 too much people
+                    $controller_name = "error";
+                    $code = "E0005";
+                    $description = "Trop de members tuent les membres";
+                    $payload = "";
+                }
+            } else // IF NOT : RETURN E006 not discussion creator
+            {
+                $controller_name = "error";
+                $code = "E0006";
+                $description = "Vous n'avez pas le droit d'effectuer cette manipulation pour cette discussion";
+                $payload = "";
+            }
+        }
+        else
+        {
+            $controller_name = "error";
+            $code = "E000?";
+            $description = "La discussion n'existe pas ? Comment etes vous arrivez ici vous !?";
+            $payload = "";
+        }
         //CREATE RESPONSE ----------------------------------------------------------------------------------------------------------------------------
         $resp_data = $this->get('serializer')->serialize($payload, 'json');                         //Met au bon format
         $resp_payload = json_decode($resp_data);                                                //Decodage string to json
@@ -242,29 +284,50 @@ class DiscussionsController extends AbstractController
         }
 //        return new Response("La requête est bien constituée : \"$request_token : $request_discussionId : $request_force\"");
 
-        $controller_name="error";
-        $error = "E0007";
-        $description_error="Pour quitter une conversation dont vous êtes créateur, il faut forcer sa suppression";
-        $error2 = "E0008";
-        $description_error2="Vous ne pouvez quitter cette conversation car vous n'en faites par partie ou qu'elle n'existe pas";
-
-        $controller_name = "discussion";
-        $code = "T0009";
-        $description = "La discussion a été supprimée, ainsi son historique";
-        $code2 = "T0010";
-        $description2 = "Vous avez quitté la conversation";
+        $discuss_name_existing = $this->getDoctrine()
+            ->getRepository(Group::class)
+            ->findOneBy(['discussionName' => $request_discussionId]);
 
         //CONDITION :
         //  IF SESSIONS TOKEN existe
-        //  IF USER IS CREATOR OF DISCUSS
-        //      IF force = true : User Leave + Conv delete + message delete : RETURN T0009
-        //      IF NOT : RETURN E0007
-        //  IF USER IS MEMBER OF DISCUSS
-        //      enleve utilisateur de la discussion : RETURN T0010
-        //  IF NOT : RETURN E0008
 
-        $payload = null;
+        //  IF USER IS CREATEUR DISCUSSION
+        if ($this->getUser()->getId() == $discuss_name_existing->getCreator())
+        {
+            if ($request_force == true)
+            {
+                //      IF force = true : User Leave + Conv delete + message delete : RETURN T0009
+                $controller_name = "discussion";
+                $code = "T0009";
+                $description = "La discussion a été supprimée, ainsi son historique";
 
+                //userCreator Leave -> Delete Discussion + Deletes Messages
+            }
+            else
+            {
+                //      IF NOT : RETURN E0007
+                $controller_name="error";
+                $code = "E0007";
+                $description="Pour quitter une conversation dont vous êtes créateur, il faut forcer sa suppression";
+            }
+        }
+        else if ($discuss_name_existing->getUser($this->getUser()->getId()))
+        {
+            //  IF USER IS MEMBER OF DISCUSS
+            //      enleve utilisateur de la discussion : RETURN T0010
+            $controller_name = "discussion";
+            $code = "T0010";
+            $description = "Vous avez quitté la conversation";
+        }
+        else
+        {
+            //  IF NOT : RETURN E0008
+            $controller_name="error";
+            $code = "E0008";
+            $description="Vous ne pouvez quitter cette conversation car vous n'en faites par partie ou qu'elle n'existe pas";
+        }
+
+        $payload = "";
         //CREATE RESPONSE ----------------------------------------------------------------------------------------------------------------------------
         $resp_data = $this->get('serializer')->serialize($payload, 'json');                         //Met au bon format
         $resp_payload = json_decode($resp_data);                                                //Decodage string to json

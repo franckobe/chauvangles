@@ -64,7 +64,7 @@ class Group
         return $this;
     }
 
-    public function getCreator(): self
+    public function getCreator()
     {
         return $this->creator;
     }
@@ -79,6 +79,16 @@ class Group
     {
         return $this->discussionName;
     }
+
+    public function getUser($user_id)
+    {
+        //IF USER IS NOT IN THE GROUP RETURN FALSE
+        return true;
+
+        //IF USER IS IN THE GROUP RETURN TRUE
+//        return false;
+    }
+
 
     public function __construct() {
         $this->users = new \Doctrine\Common\Collections\ArrayCollection();
