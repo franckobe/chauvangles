@@ -10,6 +10,7 @@ namespace App\Controller;
 
 use App\Form\Registration;
 use App\Entity\User;
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -96,14 +97,14 @@ class MembersController extends AbstractController
             $description = "Liste des utilisateurs connectés";
 
             //CONDITION :
-            //  IF SESSIONS TOKEN existe : RETURN (LOGIN / ID) where status = connected + (meme info qu'au dessus)
+            //  If TOKEN EXIST
+            //  If TOKEN IS VALID
+            $users = $this->getDoctrine()
+                ->getRepository(User::class)
+                ->findByExampleField();
 
             //-------------FETCH RESULTs---------------------------------------------------
-            $critera = array("status"=>1);
-            $repository = $this->getDoctrine()
-                ->getRepository(User::class)
-                ->findBy($critera, null, 100); //status = online, null, 100 membres max
-            $repository = $this->get('serializer')->serialize($repository, 'json');
+            $repository = $this->get('serializer')->serialize($users, 'json');
             $response = new Response($repository);
             $response = json_decode($response->getContent(), JSON_UNESCAPED_SLASHES);
 

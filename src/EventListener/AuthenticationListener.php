@@ -18,7 +18,7 @@ class AuthenticationListener extends AbstractController
     {
         $user = $this->getUser();
         $token = $event->getData();
-//        $user->setApiToken($token['token']);
+        $user->setApiToken($token['token']);
 
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->persist($user);

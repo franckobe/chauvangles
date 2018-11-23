@@ -54,7 +54,7 @@ class User implements UserInterface
     private $groups;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="text",  nullable=true)
      */
     private $apiToken;
 
