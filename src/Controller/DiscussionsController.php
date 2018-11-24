@@ -8,6 +8,7 @@
 
 namespace App\Controller;
 
+use function Couchbase\defaultDecoder;
 use JWT\Authentication\JWT;
 use App\Form\Registration;
 use App\Entity\User;
@@ -46,7 +47,10 @@ class DiscussionsController extends AbstractController
         $request_token = '';
         $request_discussionName= '';
         $request_members = [];
-        $discussionAlreadyExist = null;
+        $discussionWithoutDiscussionNameHaveSameMembersId = null;
+        $discussionWithoutDiscussionNameHaveSameMembers = false;
+        $discussionsWithSameMembers = Group::class;
+        $discussionWithSameNameExist = false;
 
         //On recupere la requete utilisateur
         $request_str = $this->container->get('request_stack')->getCurrentRequest()->getContent(); //STRING
@@ -62,32 +66,38 @@ class DiscussionsController extends AbstractController
         }
 
         //vérifie si une discussion ayant le même nom //et le même créateur existe
-        $discuss_name_existing = $this->getDoctrine()
-            ->getRepository(Group::class)
-            ->findOneBy(['discussionName' => $request_discussionName]);
-
-        //Vérifie si une discussion avec les mêmes membres éxiste dans le cas ou il n'y a pas de discussion_name
-        $discussions = $this->getDoctrine()
-            ->getRepository(Group::class)
-            ->findAll();
-
-        $userId = [];
-        foreach ($discussions as $discussion){
-            $users = $discussion->getUsers();
-            foreach ($users as $user){
-                array_push($userId, $user->id);
-            }
-            if (array_diff($userId,$request_members) == array_diff($request_members,$userId)) {
-                $discussionAlreadyExist = $discussion->getId() ;
-            }
-            $userId = array();
+        if (isset($request_discussionName)){
+            $discuss_name_existing = $this->getDoctrine()
+                ->getRepository(Group::class)
+                ->findOneBy(['discussionName' => $request_discussionName]);
         }
 
-        $discussionsWithSameMembers = $this->getDoctrine()
-            ->getRepository(Group::class)
-            ->find($discussionAlreadyExist);
+        //SI ON A PAS DE DISCUSSION NAME DANS LA REQUETE CLIENT
+        if (!isset($request_discussionName)){
+            //Vérifie si une discussion avec les mêmes membres éxiste dans le cas ou il n'y a pas de discussion_name
+            $discussions = $this->getDoctrine()
+                ->getRepository(Group::class)
+                ->findAll();
 
-        //Discussion n'existe pas !
+            $userId = [];
+            foreach ($discussions as $discussion){
+                $users = $discussion->getUsers();
+                foreach ($users as $user){
+                    array_push($userId, $user->id);
+                }
+                if (array_diff($userId,$request_members) == array_diff($request_members,$userId)) {
+                    $discussionWithoutDiscussionNameHaveSameMembersId = $discussion->getId();
+                    $discussionWithoutDiscussionNameHaveSameMembers = true;
+                }
+                $userId = array();
+            }
+
+            $discussionsWithSameMembers = $this->getDoctrine()
+                ->getRepository(Group::class)
+                ->find($discussionWithoutDiscussionNameHaveSameMembersId);
+        }
+
+        //SI LA DISCUSSION N'EXISTE PAS
         if (empty($discuss_name_existing))
         {
             //  IF MEMBERS NOT DEFINE : RETURN ERREUR E0004 no member list
@@ -116,18 +126,10 @@ class DiscussionsController extends AbstractController
                     $description = "Trop de members tuent les membres";
                     $payload = "";
                 } else {
-                    //  SINON la discussion est créée et les membres ajoutés : RETURN T0007
-                    $controller_name = "discussion";
-                    $code = "T0007";
-                    $description = "Création d'une discussion";
-                    $payload = array(
-                        'id' => $request_discussionName,
-                        'label' => $request_discussionName
-                    );
                     $manager = $this->getDoctrine()->getManager();
                     $group = new Group();
                     $group->setName($request_discussionName);
-                    $group->setCreator($this->getUser()->getId()); // PRENDRE L'id de l'utilisateur qui est dans TOKEN <----
+                    $group->setCreator($this->getUser()->getId());
                     $group->setDateCreation(new \DateTime());
                     foreach($users as $user){
                         $group->addUser($user);
@@ -135,24 +137,41 @@ class DiscussionsController extends AbstractController
                     }
                     $manager->persist($group);
                     $manager->flush();
+
+                    //  SINON la discussion est créée et les membres ajoutés : RETURN T0007
+                    $controller_name = "discussion";
+                    $code = "T0007";
+                    $description = "Création d'une discussion";
+                    $payload = array(
+                        'id' => $group->getId(),
+                        'label' => $request_discussionName
+                    );
                 }
             }
         }
-        else //Discussion Existe !
+
+        //SI LA DISCUSSION EXISTE
+        elseif ($discuss_name_existing)
         {
             //  IF DISCUSSION_NAME existe : IF MEMBERs IS DEFINE : GET THE DISCUSSION (RETURN T0006)
             $controller_name = "discussion";
             $code = "T0006";
             $description = "Récupération d'une discussion existante";
             $messages = $this->getLastMessages($request_discussionName);
-            /*$messages = array(
-                'author' => 'authorLogin as String',
-                'message' => 'message as StringOrBase64',
-                'dateTime' => 'date as ISODateTime',
-            );*/
             $payload = array(
                 'id' => $request_discussionName,
                 'label' => $request_discussionName,
+                'lastMessages' => $messages
+            );
+        }elseif($discussionWithoutDiscussionNameHaveSameMembers){
+            //  IF DISCUSSION_NAME existe : IF MEMBERs IS DEFINE : GET THE DISCUSSION (RETURN T0006)
+            $controller_name = "discussion";
+            $code = "T0006";
+            $description = "Récupération d'une discussion existante";
+            $messages = $this->getLastMessages($request_discussionName); // Doit renvoyer des objets group_message
+            $payload = array(
+                'id' => $discussionWithoutDiscussionNameHaveSameMembersId,
+                'label' => $discussionsWithSameMembers->getName(),
                 'lastMessages' => $messages
             );
         }
