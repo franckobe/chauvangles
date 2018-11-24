@@ -30,6 +30,11 @@ class DiscussionsController extends AbstractController
      */
     public function discussions_getcreate(): Response
     {
+        $request_token = '';
+        $request_discussionName= '';
+        $request_members = [];
+        $discussionAlreadyExist = null;
+
         //On recupere la requete utilisateur
         $request_str = $this->container->get('request_stack')->getCurrentRequest()->getContent(); //STRING
         $request_json = json_decode($request_str, true); //object JSON
@@ -40,26 +45,34 @@ class DiscussionsController extends AbstractController
                 $request_discussionName = $value;
             } else if ($key == "members") {
                 $request_members = $value;
-            } else {
-//                $request_token = "token string";
-//                $request_discussionName = "discussName string";
-//                $request_members = "members array of id integer";
-//                return new Response("La requête n'est pas bien constituée : \"$request_token : $request_discussionName : $request_members\"");
             }
         }
-//        return new Response("La requête est bien constituée : \"$request_token : $request_discussionName : $request_members\"");
-
-//        IF SESSIONS TOKEN existe
-//        $token_user_live= $this->getUser()->getApiToken();
-//        if ($request_token == $token_user_live)
-//        {
-//        }
-//        else{return new Response("error bad token !");}
 
         //vérifie si une discussion ayant le même nom //et le même créateur existe
         $discuss_name_existing = $this->getDoctrine()
             ->getRepository(Group::class)
             ->findOneBy(['discussionName' => $request_discussionName]);
+
+        //Vérifie si une discussion avec les mêmes membres éxiste dans le cas ou il n'y a pas de discussion_name
+        $discussions = $this->getDoctrine()
+            ->getRepository(Group::class)
+            ->findAll();
+
+        $userId = [];
+        foreach ($discussions as $discussion){
+            $users = $discussion->getUsers();
+            foreach ($users as $user){
+                array_push($userId, $user->id);
+            }
+            if (array_diff($userId,$request_members) == array_diff($request_members,$userId)) {
+                $discussionAlreadyExist = $discussion->getId() ;
+            }
+            $userId = array();
+        }
+
+        $discussionsWithSameMembers = $this->getDoctrine()
+            ->getRepository(Group::class)
+            ->find($discussionAlreadyExist);
 
         //Discussion n'existe pas !
         if (empty($discuss_name_existing))

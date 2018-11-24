@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -37,8 +39,8 @@ class Group
     private $date_creation;
 
     /**
-     * Many Groups have Many Users.
-     * @ManyToMany(targetEntity="User", mappedBy="groups", cascade={"persist"})
+     * Many Users have Many Groups.
+     * @ManyToMany(targetEntity="User", mappedBy="groups")
      */
     private $users;
 
@@ -81,13 +83,23 @@ class Group
     }
 
     public function __construct() {
-        $this->users = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     public function addUser(User $users)
     {
         $this->users[] = $users;
         return $this;
+    }
+
+    public function getUsers() : Collection
+    {
+        return $this->users;
+    }
+
+    public function removeUsers(User $user)
+    {
+        return $this->users->removeElement($user);
     }
 
 }

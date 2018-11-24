@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinTable;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -169,12 +171,22 @@ class User implements UserInterface
     }
 
     public function __construct() {
-        $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->groups = new ArrayCollection();
     }
 
     public function addGroup(Group $groups)
     {
         $this->groups[] = $groups;
         return $this;
+    }
+
+    public function getGroups() : Collection
+    {
+        return $this->groups;
+    }
+
+    public function removeGroup(Group $group)
+    {
+        return $this->groups->removeElement($group);
     }
 }
