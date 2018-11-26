@@ -8,18 +8,14 @@
 
 namespace App\Controller;
 
-use function Couchbase\defaultDecoder;
 use JWT\Authentication\JWT;
-use App\Form\Registration;
 use App\Entity\User;
 use App\Entity\Group;
 use App\Entity\GroupMessage;
-use function PHPSTORM_META\elementType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 
@@ -44,13 +40,12 @@ class DiscussionsController extends AbstractController
      */
     public function discussions_getcreate(): Response
     {
-        $request_token = '';
         $request_discussionName= '';
         $request_members = [];
         $discussionWithoutDiscussionNameHaveSameMembersId = null;
         $discussionWithoutDiscussionNameHaveSameMembers = false;
         $discussionsWithSameMembers = Group::class;
-        $discussionWithSameNameExist = false;
+        $discuss_name_existing = Group::class;
 
         //On recupere la requete utilisateur
         $request_str = $this->container->get('request_stack')->getCurrentRequest()->getContent(); //STRING
@@ -65,15 +60,15 @@ class DiscussionsController extends AbstractController
             }
         }
 
-        //vérifie si une discussion ayant le même nom //et le même créateur existe
+        //vérifie si une discussion ayant le même nom et le même créateur existe
         if (isset($request_discussionName)){
             $discuss_name_existing = $this->getDoctrine()
                 ->getRepository(Group::class)
-                ->findOneBy(['discussionName' => $request_discussionName]);
+                ->findOneBy(['discussionName' => $request_discussionName, 'creator' => $this->getUser()->getId()]);
         }
 
         //SI ON A PAS DE DISCUSSION NAME DANS LA REQUETE CLIENT
-        if (!isset($request_discussionName)){
+        if (($request_discussionName) == null){
             //Vérifie si une discussion avec les mêmes membres éxiste dans le cas ou il n'y a pas de discussion_name
             $discussions = $this->getDoctrine()
                 ->getRepository(Group::class)
@@ -149,30 +144,29 @@ class DiscussionsController extends AbstractController
                 }
             }
         }
-
         //SI LA DISCUSSION EXISTE
-        elseif ($discuss_name_existing)
+        if ($discuss_name_existing && $discussionWithoutDiscussionNameHaveSameMembers == false)
         {
             //  IF DISCUSSION_NAME existe : IF MEMBERs IS DEFINE : GET THE DISCUSSION (RETURN T0006)
             $controller_name = "discussion";
             $code = "T0006";
             $description = "Récupération d'une discussion existante";
-            $messages = $this->getLastMessages($request_discussionName);
+//            $messages = $this->getLastMessages($request_discussionName);
             $payload = array(
                 'id' => $request_discussionName,
                 'label' => $request_discussionName,
-                'lastMessages' => $messages
+//                'lastMessages' => $messages
             );
         }elseif($discussionWithoutDiscussionNameHaveSameMembers){
             //  IF DISCUSSION_NAME existe : IF MEMBERs IS DEFINE : GET THE DISCUSSION (RETURN T0006)
             $controller_name = "discussion";
             $code = "T0006";
             $description = "Récupération d'une discussion existante";
-            $messages = $this->getLastMessages($request_discussionName); // Doit renvoyer des objets group_message
+//            $messages = $this->getLastMessages($request_discussionName); // Doit renvoyer des objets group_message
             $payload = array(
-                'id' => $discussionWithoutDiscussionNameHaveSameMembersId,
+                'id' => $discussionsWithSameMembers->getId(),
                 'label' => $discussionsWithSameMembers->getName(),
-                'lastMessages' => $messages
+//                'lastMessages' => $messages
             );
         }
 
@@ -201,6 +195,9 @@ class DiscussionsController extends AbstractController
      */
     public function discussions_addmember(): Response
     {
+        $request_discussionId = (int) null;
+        $request_members = [];
+
         //On recupere la requete utilisateur
         $request_str = $this->container->get('request_stack')->getCurrentRequest()->getContent(); //STRING
         $request_json = json_decode($request_str, true); //object JSON
@@ -211,17 +208,11 @@ class DiscussionsController extends AbstractController
                 $request_discussionId = $value;
             } else if ($key == "newMembers") {
                 $request_members = $value;
-            } else {
-//                $request_token = "token string";
-//                $request_discussionId = "discussId string";
-//                $request_members = "newMembers array of id integer";
-//                return new Response("La requête n'est pas bien constituée : \"$request_token : $request_discussionId : $request_members[1]\"");
             }
         }
-//        return new Response("La requête est bien constituée : \"$request_token : $request_discussionId : $request_members[1]\"");
 
-        //CONDITION :
-        //  IF SESSIONS TOKEN existe !!!!!!!!!!!!!
+        $docRepoUser = $this->getDoctrine()
+            ->getRepository(User::class);
 
         $discuss_name_existing = $this->getDoctrine()
             ->getRepository(Group::class)
@@ -234,21 +225,31 @@ class DiscussionsController extends AbstractController
             if ($this->getUser()->getId() == $discuss_name_existing->getCreator()) {
                 //  IF USERS NUMBER < 9 : AJOUT DES MEMBRES + RETURN T0008
                 $count = count($request_members);
+                $membersAlreadyIn = $discuss_name_existing->getUsers();
+                $finalCount = $count + sizeof($membersAlreadyIn);
+                if ($finalCount <= 9) {
+                    //AJOUTER LE/LES MEMBRES DANS LA BDD
+                    $manager = $this->getDoctrine()->getManager();
+                    $usersArray = [];
+                    $user = new User();
+                    foreach($request_members as $members){
+                        $user = $docRepoUser->find($members);
+                        array_push($usersArray, $user);
+                        $discuss_name_existing->addUser($user);
+                        $user->addGroup($discuss_name_existing);
+                    }
 
-                if ($count < 9) {
+                    $manager->persist($user);
+                    $manager->flush();
                     $controller_name = "discussion";
                     $code = "T0008";
                     $description = "Membre(s) ajouté(s) avec succès";
-                    $payload = "YESS";
-                    //AJOUTER LE/LES MEMBRES DANS LA BDD
-
-                    /*
                     $payload = array(
                         'members' => array(
                             "userLogin qui a été ajouté",
                             "userLogin qui a été ajouté"
                         )
-                    );*/
+                    );
                 } else {
                     //  IF USERS NUMBER + createur > 9 : RETURN E0005 too much people
                     $controller_name = "error";
@@ -261,7 +262,6 @@ class DiscussionsController extends AbstractController
                 $controller_name = "error";
                 $code = "E0006";
                 $description = "Vous n'avez pas le droit d'effectuer cette manipulation pour cette discussion";
-                $payload = "";
             }
         }
         else

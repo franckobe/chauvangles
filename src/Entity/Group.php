@@ -77,7 +77,7 @@ class Group
         return $this;
     }
 
-    public function getName(): self
+    public function getName(): string
     {
         return $this->discussionName;
     }
