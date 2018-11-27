@@ -197,6 +197,7 @@ class DiscussionsController extends AbstractController
     {
         $request_discussionId = (int) null;
         $request_members = [];
+        $payload = "";
 
         //On recupere la requete utilisateur
         $request_str = $this->container->get('request_stack')->getCurrentRequest()->getContent(); //STRING
@@ -230,15 +231,14 @@ class DiscussionsController extends AbstractController
                 if ($finalCount <= 9) {
                     //AJOUTER LE/LES MEMBRES DANS LA BDD
                     $manager = $this->getDoctrine()->getManager();
-                    $usersArray = [];
+                    $usersNameArray = [];
                     $user = new User();
                     foreach($request_members as $members){
                         $user = $docRepoUser->find($members);
-                        array_push($usersArray, $user);
+                        array_push($usersNameArray, $user->getUsername());
                         $discuss_name_existing->addUser($user);
                         $user->addGroup($discuss_name_existing);
                     }
-
                     $manager->persist($user);
                     $manager->flush();
                     $controller_name = "discussion";
@@ -246,8 +246,7 @@ class DiscussionsController extends AbstractController
                     $description = "Membre(s) ajouté(s) avec succès";
                     $payload = array(
                         'members' => array(
-                            "userLogin qui a été ajouté",
-                            "userLogin qui a été ajouté"
+                            $usersNameArray
                         )
                     );
                 } else {
