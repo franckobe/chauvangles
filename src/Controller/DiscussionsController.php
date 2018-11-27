@@ -18,7 +18,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
-
+use Doctrine\ORM\EntityManager;
 
 class DiscussionsController extends AbstractController
 {
@@ -107,7 +107,7 @@ class DiscussionsController extends AbstractController
             {
                 //  IF MEMBERS IS DEFINE (+ de 9 membre) : RETURN ERREUR E0004 too much poeple
                 $count = count($request_members);
-                $users = [];
+
                 foreach ($request_members as $members){
                     array_push($users, $this->getDoctrine()
                         ->getRepository(User::class)
@@ -296,15 +296,20 @@ class DiscussionsController extends AbstractController
      */
     public function discussions_leave(): Response
     {
+        $request_force = (boolean) null;
+        $request_discussionId = (string) null;
+        $controller_name = (string) null;
+        $code = (string) null;
+        $description = (string) null;
         //On recupere la requete utilisateur
         $request_str = $this->container->get('request_stack')->getCurrentRequest()->getContent(); //STRING
         $request_json = json_decode($request_str, true); //object JSON
         foreach ($request_json as $key => $value){
-            if ($key == "token") {
+            if ($key === 'token') {
                 $request_token = $value;
-            } else if ($key == "discussionId") {
+            } else if ($key === 'discussionId') {
                 $request_discussionId = $value;
-            } else if ($key == "force") {
+            } else if ($key === 'force') {
                 $request_force = $value;
             } else {
 //                $request_token = "token string";
@@ -315,22 +320,28 @@ class DiscussionsController extends AbstractController
         }
 //        return new Response("La requête est bien constituée : \"$request_token : $request_discussionId : $request_force\"");
 
-        $discuss_name_existing = $this->getDoctrine()
-            ->getRepository(Group::class)
-            ->findOneBy(['discussionName' => $request_discussionId]);
+        if ($request_discussionId !== null) {
+            $discuss_name_existing = $this->getDoctrine()
+                ->getRepository(Group::class)
+                ->findOneBy(['discussionName' => $request_discussionId]);
+        }
 
         //CONDITION :
         //  IF SESSIONS TOKEN existe
 
         //  IF USER IS CREATEUR DISCUSSION
-        if ($this->getUser()->getId() == $discuss_name_existing->getCreator())
+        if ($this->getUser()->getId() === $discuss_name_existing->getCreator())
         {
-            if ($request_force == true)
+            if ($request_force === true)
             {
+                $em = $this->getDoctrine()->getEntityManager();
+                $em->remove($discuss_name_existing);
+                $em->flush();
+
                 //      IF force = true : User Leave + Conv delete + message delete : RETURN T0009
                 $controller_name = "discussion";
                 $code = "T0009";
-                $description = "La discussion a été supprimée, ainsi son historique";
+                $description = "La discussion a été supprimée, ainsi que son historique";
 
                 //userCreator Leave -> Delete Discussion + Deletes Messages
             }
@@ -342,21 +353,24 @@ class DiscussionsController extends AbstractController
                 $description="Pour quitter une conversation dont vous êtes créateur, il faut forcer sa suppression";
             }
         }
-        else if ($discuss_name_existing->getUser($this->getUser()->getId()))
-        {
-            //  IF USER IS MEMBER OF DISCUSS
-            //      enleve utilisateur de la discussion : RETURN T0010
-            $controller_name = "discussion";
-            $code = "T0010";
-            $description = "Vous avez quitté la conversation";
-        }
-        else
-        {
-            //  IF NOT : RETURN E0008
-            $controller_name="error";
-            $code = "E0008";
-            $description="Vous ne pouvez quitter cette conversation car vous n'en faites par partie ou qu'elle n'existe pas";
-        }
+            if($this->getUser()->getGroups()->contains($discuss_name_existing)){
+                //  IF USER IS MEMBER OF DISCUSS
+                $this->getUser()->removeGroup($discuss_name_existing);
+                $manager = $this->getDoctrine()->getManager();
+                $manager->persist($this->getUser());
+                $manager->flush();
+                $controller_name = "discussion";
+                $code = "T0010";
+                $description = "Vous avez quitté la conversation";
+            }
+            else
+            {
+                //  IF NOT : RETURN E0008
+                $controller_name="error";
+                $code = "E0008";
+                $description="Vous ne pouvez quitter cette conversation car vous n'en faites par partie ou qu'elle n'existe pas";
+            }
+
 
         $payload = "";
         //CREATE RESPONSE ----------------------------------------------------------------------------------------------------------------------------
