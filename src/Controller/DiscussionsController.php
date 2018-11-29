@@ -176,7 +176,7 @@ class DiscussionsController extends AbstractController
 //            $messages = $this->getLastMessages($request_discussionName); // Doit renvoyer des objets group_message
             $payload = array(
                 'id' => $discussionsWithSameMembers->getId(),
-                'label' => $discussionsWithSameMembers->getName(),
+                'label' => $discussionsWithSameMembers->getName()
 //                'lastMessages' => $messages
             );
         }

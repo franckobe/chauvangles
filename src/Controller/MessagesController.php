@@ -47,15 +47,7 @@ class MessagesController extends AbstractController
         }
 //        return new Response("La requête est bien constituée : \"$request_token : $request_discussionId : $request_messageNumber\"");
 
-        $controller_name="error";
-        $error = "E0009";
-        $description_error="Vous ne pouvez pas réaliser cette opération car la discussion n'existe pas ou que vous n'en faites pas partie";
-
-        $controller_name = "discussion";
-        $code = "T0006";
-        $description = "Récupération d'une discussion existante";
-
-        if (isset($request_discussionId)){
+          if (isset($request_discussionId)){
             $discuss_name_existing = $this->getDoctrine()
                 ->getRepository(Group::class)
                 ->findOneBy(['discussionName' => $request_discussionId]);
@@ -69,34 +61,34 @@ class MessagesController extends AbstractController
             $controller_name = "discussion";
             $code = "T0006";
             $description = "Récupération d'une discussion existante";
+            $id_discuss = $discuss_name_existing->getId();
 
             if (isset($request_messageNumber))
             {
-                //  IF MessageNumber NOT DEFINE : RETURN $request_messageNumber message
-
+                //  IF MessageNumber DEFINE : RETURN $request_messageNumber message
+                $messages_array = "OK";
+                //
+                $messages_array = $this->getDoctrine()
+                    ->getRepository(GroupMessage::class)
+                    ->findBy(['group_' => $id_discuss],null,$request_messageNumber);
+                //
                 $payload = array(
-                    'id' => 'discussionId as StringOrInt',
-                    'label' => 'discussionLabel as String',
-                    'status' => 'connected',
-                    'lastMessages' => array(
-                        'author' => 'authorLogin as String',
-                        'message' => 'message as StringOrBase64',
-                        'dateTime' => 'date as ISODateTime',
-                    )
+                    'id' => $request_discussionId,
+                    'label' => $request_discussionId,
+                    'lastMessages' => $messages_array
                 );
             }
             else
             {
-                //  IF MessageNumber NOT DEFINE : RETURN 50 message
+                //  IF MessageNumber NOT DEFINE : RETURN 20 message
+                $messages_array = "OK";
+                $messages_array = $this->getDoctrine()
+                    ->getRepository(GroupMessage::class)
+                    ->findBy(['group_' => $id_discuss],null,20);
                 $payload = array(
-                    'id' => 'discussionId as StringOrInt',
-                    'label' => 'discussionLabel as String',
-                    'status' => 'connected',
-                    'lastMessages' => array(
-                        'author' => 'authorLogin as String',
-                        'message' => 'message as StringOrBase64',
-                        'dateTime' => 'date as ISODateTime',
-                    )
+                    'id' => $request_discussionId,
+                    'label' => $request_discussionId,
+                    'lastMessages' => $messages_array
                 );
             }
         }
@@ -106,6 +98,7 @@ class MessagesController extends AbstractController
             $controller_name="error";
             $code = "E0009";
             $description= "Vous ne pouvez pas réaliser cette opération car la discussion n'existe pas ou que vous n'en faites pas partie";
+            $payload="";
         }
 
         //CREATE RESPONSE ----------------------------------------------------------------------------------------------------------------------------
