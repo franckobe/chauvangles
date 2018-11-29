@@ -207,3 +207,4 @@ fabric.properties
 ###> lexik/jwt-authentication-bundle ###
 #/config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
+/src/Migrations

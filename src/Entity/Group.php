@@ -111,5 +111,4 @@ class Group
     {
         return $this->users->removeElement($user);
     }
-
 }
