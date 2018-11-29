@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -11,9 +12,10 @@ use Doctrine\ORM\Mapping as ORM;
 class GroupMessage
 {
     /**
+     * @ORM\Id
      * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(name="id",type="integer")
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
@@ -28,7 +30,7 @@ class GroupMessage
     private $date_emission;
 
     /**
-     * @ORM\Column(name="date_reception",type="text")
+     * @ORM\Column(name="date_reception",type="datetime")
      */
     private $date_reception;
 
@@ -39,7 +41,6 @@ class GroupMessage
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\User", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(nullable=false)
      */
     private $sender;
 
@@ -66,24 +67,24 @@ class GroupMessage
         return $this;
     }
 
-    public function getDateEmission(): ?\DateTimeInterface
+    public function getDateEmission()
     {
         return $this->date_emission;
     }
 
-    public function setDateEmission(\DateTimeInterface $date_emission): self
+    public function setDateEmission($date_emission): self
     {
         $this->date_emission = $date_emission;
 
         return $this;
     }
 
-    public function getDateReception(): ?\DateTimeInterface
+    public function getDateReception()
     {
         return $this->date_reception;
     }
 
-    public function setDateReception(\DateTimeInterface $date_reception): self
+    public function setDateReception($date_reception): self
     {
         $this->date_reception = $date_reception;
 
@@ -95,7 +96,7 @@ class GroupMessage
         return $this->date_read;
     }
 
-    public function setDateRead(\DateTimeInterface $date_read): self
+    public function setDateRead($date_read): self
     {
         $this->date_read = $date_read;
 
@@ -124,5 +125,7 @@ class GroupMessage
         $this->group_ = $group_;
 
         return $this;
+    }
+    public function __construct() {
     }
 }

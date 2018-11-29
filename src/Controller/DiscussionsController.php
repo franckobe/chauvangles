@@ -34,6 +34,7 @@ class DiscussionsController extends AbstractController
         return array();
     }
 
+    //@Route("/restapi/discussions/get-or-create", name="discussions_getcreate")
     /**
      * @Route("/discussions/get-or-create", name="discussions_getcreate")
      * @return \Symfony\Component\HttpFoundation\JsonResponse|Response
@@ -112,7 +113,6 @@ class DiscussionsController extends AbstractController
                     array_push($users, $this->getDoctrine()
                         ->getRepository(User::class)
                         ->find($members));
-
                 }
 
                 if ($count >= 9) {
@@ -130,6 +130,7 @@ class DiscussionsController extends AbstractController
                         $group->addUser($user);
                         $user->addGroup($group);
                     }
+                    $group->addUser($this->getUser()->getId()); //ON AJOUTE AUSSI LE CREATEUR EN TANT QUE MEMBRE !
                     $manager->persist($group);
                     $manager->flush();
 
@@ -189,6 +190,7 @@ class DiscussionsController extends AbstractController
 
     }
 
+    //@Route("/restapi/discussions/add-member", name="discussions_addmember")
     /**
      * @Route("/discussions/add-member", name="discussions_addmember")
      * @return \Symfony\Component\HttpFoundation\JsonResponse|Response
@@ -290,6 +292,7 @@ class DiscussionsController extends AbstractController
 
     }
 
+    //@Route("/restapi/discussions/leave", name="discussions_leave")
     /**
      * @Route("/discussions/leave", name="discussions_leave")
      * @return \Symfony\Component\HttpFoundation\JsonResponse|Response
@@ -391,6 +394,7 @@ class DiscussionsController extends AbstractController
         return $resp_jwt_json;                                     //Envoi du token jwt
     }
 
+    //@Route("/restapi/discussions/list", name="discussions_list")
     /**
      * @Route("/discussions/list", name="discussions_list")
      * @return \Symfony\Component\HttpFoundation\JsonResponse|Response

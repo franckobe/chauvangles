@@ -26,6 +26,7 @@ use Symfony\Component\Serializer\Serializer;
 class MembersController extends AbstractController
 {
 
+    //@Route("/restapi/members/get-all", name="members_all")
     /**
      * @Route("/members/get-all", name="members_all")
      * @return \Symfony\Component\HttpFoundation\JsonResponse|Response
@@ -81,6 +82,7 @@ class MembersController extends AbstractController
         }
     }
 
+    //@Route("/restapi/members/get-online", name="members_online")
     /**
      * @Route("/members/get-online", name="members_online")
      * @return \Symfony\Component\HttpFoundation\JsonResponse|Response
@@ -120,7 +122,7 @@ class MembersController extends AbstractController
             //SEND THE RESPONSE --------------------------------------------------
             $resp_data = $this->get('serializer')->serialize($users, 'json');                         //Met au bon format
             $resp_payload = json_decode($resp_data);                                                //Decodage string to json
-            $resp_payload[0]->password="";
+            //$resp_payload[0]->password="";
 
             //Mise en forme du contenu --------
             $resp_content_json = array(
