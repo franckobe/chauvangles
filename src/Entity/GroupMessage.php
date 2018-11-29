@@ -3,7 +3,16 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToOne;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Doctrine\ORM\Mapping\JoinTable;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Form\FormTypeInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\GroupMessageRepository")
@@ -14,8 +23,8 @@ class GroupMessage
     /**
      * @ORM\Id
      * @ORM\Id()
-     * @ORM\Column(name="id", type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="id", type="integer")
      */
     private $id;
 
@@ -40,12 +49,12 @@ class GroupMessage
     private $date_read;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\User", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", cascade={"persist", "remove"})
      */
     private $sender;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Group", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\Group", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $group_;
@@ -125,7 +134,5 @@ class GroupMessage
         $this->group_ = $group_;
 
         return $this;
-    }
-    public function __construct() {
     }
 }
