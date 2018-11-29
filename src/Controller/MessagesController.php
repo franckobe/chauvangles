@@ -21,9 +21,9 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class MessagesController extends AbstractController
 {
-    //@Route("/restapi/discussions/get-messages", name="messages_getmessages")
+
     /**
-     * @Route("/discussions/get-messages", name="messages_getmessages")
+     * @Route("/restapi/discussions/get-messages", name="messages_getmessages")
      * @return \Symfony\Component\HttpFoundation\JsonResponse|Response
      */
     public function messages_getmessages(): Response
@@ -55,27 +55,61 @@ class MessagesController extends AbstractController
         $code = "T0006";
         $description = "Récupération d'une discussion existante";
 
+        if (isset($request_discussionId)){
+            $discuss_name_existing = $this->getDoctrine()
+                ->getRepository(Group::class)
+                ->findOneBy(['discussionName' => $request_discussionId]);
+        }
+
         //CONDITION :
-        //  IF SESSIONS TOKEN existe
+        //  IF SESSIONS TOKEN existe //
 
-        //  IF USER ACCESS DENIED DISCUSS: RETURN E0009
+        if($this->getUser()->getGroups()->contains($discuss_name_existing))
+        {
+            $controller_name = "discussion";
+            $code = "T0006";
+            $description = "Récupération d'une discussion existante";
 
-        //  IF MessageNumber NOT DEFINE : RETURN 50 message
-        //  RETURN MESSAGE LIST with same format GET_OR_CREATE T0006
+            if (isset($request_messageNumber))
+            {
+                //  IF MessageNumber NOT DEFINE : RETURN $request_messageNumber message
 
-        $payloadT0006 = array(
-            'id' => 'discussionId as StringOrInt',
-            'label' => 'discussionLabel as String',
-            'status' => 'connected',
-            'lastMessages' => array(
-                'author' => 'authorLogin as String',
-                'message' => 'message as StringOrBase64',
-                'dateTime' => 'date as ISODateTime',
-            )
-        );
+                $payload = array(
+                    'id' => 'discussionId as StringOrInt',
+                    'label' => 'discussionLabel as String',
+                    'status' => 'connected',
+                    'lastMessages' => array(
+                        'author' => 'authorLogin as String',
+                        'message' => 'message as StringOrBase64',
+                        'dateTime' => 'date as ISODateTime',
+                    )
+                );
+            }
+            else
+            {
+                //  IF MessageNumber NOT DEFINE : RETURN 50 message
+                $payload = array(
+                    'id' => 'discussionId as StringOrInt',
+                    'label' => 'discussionLabel as String',
+                    'status' => 'connected',
+                    'lastMessages' => array(
+                        'author' => 'authorLogin as String',
+                        'message' => 'message as StringOrBase64',
+                        'dateTime' => 'date as ISODateTime',
+                    )
+                );
+            }
+        }
+        else
+        {
+            //  IF USER ACCESS DENIED DISCUSS : E0009
+            $controller_name="error";
+            $code = "E0009";
+            $description= "Vous ne pouvez pas réaliser cette opération car la discussion n'existe pas ou que vous n'en faites pas partie";
+        }
 
         //CREATE RESPONSE ----------------------------------------------------------------------------------------------------------------------------
-        $resp_data = $this->get('serializer')->serialize($payloadT0006, 'json');                         //Met au bon format
+        $resp_data = $this->get('serializer')->serialize($payload, 'json');                         //Met au bon format
         $resp_payload = json_decode($resp_data);                                                //Decodage string to json
 
         //Mise en forme du contenu --------
@@ -93,9 +127,8 @@ class MessagesController extends AbstractController
     }
 
 
-    //@Route("/restapi/discussions/post-message", name="messages_postmessage")
     /**
-     * @Route("/discussions/post-message", name="messages_postmessage")
+     * @Route("/restapi/discussions/post-message", name="messages_postmessage")
      * @return \Symfony\Component\HttpFoundation\JsonResponse|Response
      */
     public function messages_postmessage(): Response

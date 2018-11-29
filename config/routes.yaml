@@ -7,50 +7,41 @@ dir:
     controller: App\Controller\HomeController::DirNote
 
 logout:
-    #path : restapi/logout
-    path: /logout
+    path : /restapi/logout
     controller: App\Controller\SecurityController::logout
 
 api:
-    #path : restapi/
+    #path : /restapi/
     path: /api
     controller: App\Controller\SecurityController::api
 
 members_all:
-    #path : restapi/members/get-all
-    path: /members/get-all
+    path: /restapi/members/get-all
     controller: App\Controller\MembersController::members_all
 
 members_online:
-    #path : restapi/members/get-online
-    path: /members/get-online
+    path : /restapi/members/get-online
     controller: App\Controller\MembersController::members_online
 
 discussions_getcreate:
-    #path : restapi/discussions/get-or-create
-    path: /discussions/get-or-create
+    path : /restapi/discussions/get-or-create
     controller: App\Controller\DiscussionsController::discussions_getcreate
 
 discussions_addmember:
-    #path : restapi/discussions/add-member
-    path: /discussions/add-member
+    path : /restapi/discussions/add-member
     controller: App\Controller\DiscussionsController::discussions_addmember
 
 discussions_leave:
-    #path : restapi/discussions/leave
-    path: /discussions/leave
+    path : /restapi/discussions/leave
     controller: App\Controller\DiscussionsController::discussions_leave
 discussions_list:
-    #path : restapi/discussions/list
-    path:  /discussions/list
+    path : /restapi/discussions/list
     controller: App\Controller\DiscussionsController::discussions_list
 
 messages_getmessages:
-    #path : restapi/discussions/get-messages
-    path:  /discussions/get-messages
+    path : /restapi/discussions/get-messages
     controller: App\Controller\MessagesController::messages_getmessages
 
 messages_postmessage:
-    #path : restapi/discussions/post-message
-    path:  /discussions/post-message
+    path : /restapi/discussions/post-message
     controller: App\Controller\MessagesController::messages_postmessage
