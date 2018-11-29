@@ -4,12 +4,17 @@
 Nous avons décidé de choisir PHP car c'est une compétence que toute l'équipe partage. Le choix de symfony a été fait car il est un framework populaire sur lequel 
 nous avions tous l'occasion de monter en compétence durant le projet.
 
-## Php version
-php 7.1.12
+## Versions
 
-MySql 5.7
+>  PHP 7.2.10
+ 
+>  MySQL 5.7.23 
+ 
+>  Apache 2.4.35
 
-Server local: Laragon, mamp, wamp
+## Server local
+
+Laragon, mamp, wamp
 
 ## Installer les dépendances
 
