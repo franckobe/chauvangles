@@ -14,17 +14,26 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class AuthenticationListener extends AbstractController
 {
-    public function onAuthenticationSuccessResponse(AuthenticationSuccessEvent $event)
+
+    /**
+     * @param AuthenticationSuccessEvent $event
+     * @return JsonResponse
+     */
+    public function onAuthenticationSuccessResponse(AuthenticationSuccessEvent $event): JsonResponse
     {
         $user = $this->getUser();
         $token = $event->getData();
         $user->setApiToken($token['token']);
 
+        $data = $event->getData();
+        $response = $event->getResponse();
+        $response->headers->add(['authorization' => $data['token']]); // works
+
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->persist($user);
         $entityManager->flush();
 
-        $message = $event->setData([JWT::encode(['type' => "authentication",
+        $message = $event->setData([JWT::encode(['type' => 'authentication',
             'code' => 'T0001',
             'description' => 'Vous êtes maintenant connecté',
             'payload' => $token], 'toto')]);
@@ -33,7 +42,11 @@ class AuthenticationListener extends AbstractController
 
     }
 
-    public function onAuthenticationFailureResponse(AuthenticationFailureEvent $event)
+    /**
+     * @param AuthenticationFailureEvent $event
+     * @return JsonResponse
+     */
+    public function onAuthenticationFailureResponse(AuthenticationFailureEvent $event): JsonResponse
     {
         //JWTAuthenticationFailureResponse => modifier la fonction set data pour enlever le code HTTP
 
@@ -51,8 +64,9 @@ class AuthenticationListener extends AbstractController
 
     /**
      * @param JWTExpiredEvent $event
+     * @return JsonResponse
      */
-    public function onJWTExpired(JWTExpiredEvent $event)
+    public function onJWTExpired(JWTExpiredEvent $event): JsonResponse
     {
         /** @var JWTAuthenticationFailureResponse */
         $data = JWT::encode([

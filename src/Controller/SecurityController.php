@@ -29,6 +29,7 @@ class SecurityController extends AbstractController
     }
 
 
+
     public function api()
     {
         return new Response(sprintf('Logged in as %s', $this->getUser()->getUsername()));
@@ -39,13 +40,23 @@ class SecurityController extends AbstractController
      */
     public function logout()
     {
-//          $userEmail = $this->getUser()->email;
-//          $user = $this->getUser()->apiToken;
-        $user = true;
+        $user = $this->getDoctrine()
+            ->getRepository(User::class)
+            ->find($_SERVER['last_user']);
+
+        $leaveUser = $user->getEmail();
+        $user->setApiToken(null);
+
+        $manager = $this->getDoctrine()->getManager();
+        $manager->persist($user);
+        $manager->flush();
+
+        unset($_SERVER['last_user']);
+
         if ($user){
             $type = "authentication";
             $code = "T0003";
-            $description = "L'utilisateur a été déconnecté";
+            $description = "L'utilisateur " . $leaveUser ." a bien été déconnecté";
         }else{
             $type = "error";
             $code = "E0003";
