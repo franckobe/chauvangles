@@ -211,7 +211,10 @@ class DiscussionsController extends AbstractController
     {
         $request_discussionId = (int) null;
         $request_members = [];
-        $payload = '';
+        $controller_name = (string) null;
+        $code = (string) null;
+        $description = (string) null;
+        $payload = (string) null;
 
         //On recupere la requete utilisateur
         $request_str = $this->container->get('request_stack')->getCurrentRequest()->getContent(); //STRING

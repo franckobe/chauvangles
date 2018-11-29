@@ -21,7 +21,6 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class MessagesController extends AbstractController
 {
-
     //@Route("/restapi/discussions/get-messages", name="messages_getmessages")
     /**
      * @Route("/discussions/get-messages", name="messages_getmessages")
