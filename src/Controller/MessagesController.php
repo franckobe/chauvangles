@@ -151,7 +151,7 @@ class MessagesController extends AbstractController
 
             $controller_name = "discussion";
             $code = "T0012";
-            $description = "Message \"$request_message\" enregistré avec succès";
+            $description = "Message :$request_message: enregistré avec succès";
         }
         else
         {
