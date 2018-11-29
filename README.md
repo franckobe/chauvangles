@@ -7,6 +7,8 @@ nous avions tous l'occasion de monter en compétence durant le projet.
 ## Php version
 php 7.1.12
 
+MySql 5.7
+
 Server local: Laragon, mamp, wamp
 
 ## Installer les dépendances
