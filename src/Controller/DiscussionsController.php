@@ -397,6 +397,29 @@ class DiscussionsController extends AbstractController
      */
     public function discussions_list(): Response
     {
+        $request_force = (boolean) null;
+        $request_discussionId = (string) null;
+        $controller_name = (string) null;
+        $code = (string) null;
+        $description = (string) null;
+        //On recupere la requete utilisateur
+        $request_str = $this->container->get('request_stack')->getCurrentRequest()->getContent(); //STRING
+        $request_json = json_decode($request_str, true); //object JSON
+        foreach ($request_json as $key => $value){
+            if ($key === 'token') {
+                $request_token = $value;
+            } else if ($key === 'discussionId') {
+                $request_discussionId = $value;
+            } else if ($key === 'force') {
+                $request_force = $value;
+            } else {
+//                $request_token = "token string";
+//                $request_discussionId = "discussId string";
+//                $request_force = "force bool";
+//                return new Response("La requête n'est pas bien constituée : \"$request_token : $request_discussionId : $request_force\"");
+            }
+        }
+
         $controller_name = "discussion";
         $code = "T0011";
         $description = "Liste des discussions auxquelles vous prenez part";
@@ -405,11 +428,25 @@ class DiscussionsController extends AbstractController
         //  IF SESSIONS TOKEN existe
         //  RETURN TABLEAU DISCUSSION Where user is, en disant member or creator
 
-        $payload = array(
-            'status' => 'creator',
-            'id' => 'discussionId as String',
-            'description' => 'description As String or Empty string'
-        );
+        //Récupérer le user en cours
+            $currentUser = $this->getDoctrine()
+                ->getRepository(User::class)
+                ->find($this->getUser()->getId());
+            if($currentUser){
+                $groups = $currentUser->getGroups();
+                foreach($groups as $group){
+                    $userGroups[] = $group;
+                }
+                foreach($userGroups as $userGroup){
+                    if($this->getUser()->getId() === $userGroup->getCreator()){
+                        $infoGroupUser[] = array('creator', $userGroup->id,  $userGroup->discussionName);
+                    }else{
+                        $infoGroupUser[] = array('member', $userGroup->id,  $userGroup->discussionName);
+                    }
+                }
+            }
+
+            $payload = $infoGroupUser;
 
         //CREATE RESPONSE ----------------------------------------------------------------------------------------------------------------------------
         $resp_data = $this->get('serializer')->serialize($payload, 'json');                         //Met au bon format

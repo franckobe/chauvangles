@@ -21,7 +21,7 @@ class Group
      * @ORM\Column(name="id", type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    public $id;
 
     /**
      * @ORM\Column(name="creator",type="integer")
@@ -31,7 +31,7 @@ class Group
     /**
      * @ORM\Column(name="discussionName",type="string")
      */
-    private $discussionName;
+    public $discussionName;
 
     /**
      * @ORM\Column(name="date_creation",type="datetime")
