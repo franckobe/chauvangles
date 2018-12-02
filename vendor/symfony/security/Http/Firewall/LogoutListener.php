@@ -75,7 +75,9 @@ class LogoutListener implements ListenerInterface
     {
         $request = $event->getRequest();
 
-        $_SERVER['last_user']= $this->tokenStorage->getToken()->getUser()->id;
+        if ($this->tokenStorage->getToken()->getUser()->getId() !== null){
+            $_SERVER['last_user']= $this->tokenStorage->getToken()->getUser()->getId();
+        }
 
         if (!$this->requiresLogout($request)) {
             return;
