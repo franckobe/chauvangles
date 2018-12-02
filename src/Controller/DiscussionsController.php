@@ -67,7 +67,7 @@ class DiscussionsController extends AbstractController
             }
         }
 
-        if($request_token === $this->getUser()->getApiToken()){
+        if($request_token !== null && $request_token === $this->getUser()->getApiToken()){
 
         //vérifie si une discussion ayant le même nom et le même créateur existe
         if ($request_discussionName !== null){
@@ -206,9 +206,8 @@ class DiscussionsController extends AbstractController
             'description' => $description,
             'payload' => $resp_payload
         );
-        $resp_jwt = JWT::encode($resp_content_json,'toto');          //On le met au format JWT
         $resp_jwt_json = $this->json(array(
-            'jwt'=> $resp_jwt
+            'jwt'=> JWT::encode($resp_content_json,getenv('APP_SECRET'))
         ));                                                         // Creation du JSON contenant jwt: token_jwt
         return $resp_jwt_json;                                     //Envoi du token jwt
 
@@ -226,6 +225,7 @@ class DiscussionsController extends AbstractController
         $code = (string) null;
         $description = (string) null;
         $payload = (string) null;
+        $request_token = (string) null;
 
         //On recupere la requete utilisateur
         $request_str = $this->container->get('request_stack')->getCurrentRequest()->getContent(); //STRING
@@ -241,7 +241,7 @@ class DiscussionsController extends AbstractController
             }
         }
 
-        if($request_token === $this->getUser()->getApiToken()) {
+        if($request_token !== null && $request_token === $this->getUser()->getApiToken()) {
 
             $docRepoUser = $this->getDoctrine()
                 ->getRepository(User::class);
@@ -253,11 +253,11 @@ class DiscussionsController extends AbstractController
             //Discussion n'existe pas !
             if (!empty($discuss_name_existing)) {
                 //  IF USER IS CREATEUR DISCUSSION
-                if ($this->getUser()->getId() == $discuss_name_existing->getCreator()) {
+                if ($this->getUser()->getId() === $discuss_name_existing->getCreator()) {
                     //  IF USERS NUMBER < 9 : AJOUT DES MEMBRES + RETURN T0008
-                    $count = count($request_members);
+                    $count = \count($request_members);
                     $membersAlreadyIn = $discuss_name_existing->getUsers();
-                    $finalCount = $count + sizeof($membersAlreadyIn);
+                    $finalCount = $count + \count($membersAlreadyIn);
                     if ($finalCount <= 9) {
                         //AJOUTER LE/LES MEMBRES DANS LA BDD
                         $manager = $this->getDoctrine()->getManager();
@@ -265,16 +265,16 @@ class DiscussionsController extends AbstractController
                         $user = new User();
                         foreach ($request_members as $members) {
                             $user = $docRepoUser->find($members);
-                            array_push($usersNameArray, $user->getUsername());
+                            $usersNameArray = $user->getUsername();
                             $discuss_name_existing->addUser($user);
                             $user->addGroup($discuss_name_existing);
                         }
                         $this->getUser()->addGroup($discuss_name_existing);
                         $manager->persist($user);
                         $manager->flush();
-                        $controller_name = "discussion";
-                        $code = "T0008";
-                        $description = "Membre(s) ajouté(s) avec succès";
+                        $controller_name = 'discussion';
+                        $code = 'T0008';
+                        $description = 'Membre(s) ajouté(s) avec succès';
                         $payload = array(
                             'members' => array(
                                 $usersNameArray
@@ -282,22 +282,22 @@ class DiscussionsController extends AbstractController
                         );
                     } else {
                         //  IF USERS NUMBER + createur > 9 : RETURN E0005 too much people
-                        $controller_name = "error";
-                        $code = "E0005";
-                        $description = "Trop de members tuent les membres";
-                        $payload = "";
+                        $controller_name = 'error';
+                        $code = 'E0005';
+                        $description = 'Trop de members tuent les membres';
+                        $payload = '';
                     }
                 } else // IF NOT : RETURN E006 not discussion creator
                 {
-                    $controller_name = "error";
-                    $code = "E0006";
-                    $description = "Vous n'avez pas le droit d'effectuer cette manipulation pour cette discussion";
+                    $controller_name = 'error';
+                    $code = 'E0006';
+                    $description = 'Vous n\'avez pas le droit d\'effectuer cette manipulation pour cette discussion';
                 }
             } else {
-                $controller_name = "error";
-                $code = "E000?";
-                $description = "La discussion n'existe pas ? Comment etes vous arrivez ici vous !?";
-                $payload = "";
+                $controller_name = 'error';
+                $code = 'E000?';
+                $description = 'La discussion n\'existe pas ? Comment etes vous arrivez ici vous !?';
+                $payload = '';
             }
         }
         //CREATE RESPONSE ----------------------------------------------------------------------------------------------------------------------------
@@ -311,13 +311,11 @@ class DiscussionsController extends AbstractController
             'description' => $description,
             'payload' => $resp_payload
         );
-        $resp_jwt = JWT::encode($resp_content_json,'toto');          //On le met au format JWT
         $resp_jwt_json = $this->json(array(
-            'jwt'=> $resp_jwt
-        ));                                                         // Creation du JSON contenant jwt: token_jwt
+            'jwt'=> JWT::encode($resp_content_json,getenv('APP_SECRET'))
+        ));
 
-        return $resp_jwt_json;                                     //Envoi du token jwt
-
+        return $resp_jwt_json;
     }
 
     /**
@@ -346,7 +344,7 @@ class DiscussionsController extends AbstractController
             }
         }
 
-        if($request_token === $this->getUser()->getApiToken()) {
+        if($request_token !== null && $request_token === $this->getUser()->getApiToken()) {
 
             if ($request_discussionId !== null) {
                 $discuss_name_existing = $this->getDoctrine()
@@ -443,7 +441,7 @@ class DiscussionsController extends AbstractController
 
         $payload = '';
 
-        if($request_token === $this->getUser()->getApiToken()) {
+        if($request_token !== null && $request_token === $this->getUser()->getApiToken()) {
 
             //Récupérer le user en cours
             $currentUser = $this->getDoctrine()
