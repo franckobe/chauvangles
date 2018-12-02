@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping\JoinTable;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Form\FormTypeInterface;
@@ -25,11 +26,13 @@ class GroupMessage
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(name="id", type="integer")
+     * @Groups("group3")
      */
     private $id;
 
     /**
      * @ORM\Column(name="content",type="text")
+     * @Groups("group4")
      */
     private $content;
 
