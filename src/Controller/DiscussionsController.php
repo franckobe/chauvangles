@@ -35,9 +35,8 @@ class DiscussionsController extends AbstractController
         return array();
     }
 
-    //@Route("/restapi/discussions/get-or-create", name="discussions_getcreate")
     /**
-     * @Route("/discussions/get-or-create", name="discussions_getcreate")
+     * @Route("/restapi/discussions/get-or-create", name="discussions_getcreate")
      * @return \Symfony\Component\HttpFoundation\JsonResponse|Response
      */
     public function discussions_getcreate(): Response
@@ -177,7 +176,7 @@ class DiscussionsController extends AbstractController
 //            $messages = $this->getLastMessages($request_discussionName); // Doit renvoyer des objets group_message
             $payload = array(
                 'id' => $discussionsWithSameMembers->getId(),
-                'label' => $discussionsWithSameMembers->getName(),
+                'label' => $discussionsWithSameMembers->getName()
 //                'lastMessages' => $messages
             );
         }
@@ -202,9 +201,8 @@ class DiscussionsController extends AbstractController
 
     }
 
-    //@Route("/restapi/discussions/add-member", name="discussions_addmember")
     /**
-     * @Route("/discussions/add-member", name="discussions_addmember")
+     * @Route("/restapi/discussions/add-member", name="discussions_addmember")
      * @return \Symfony\Component\HttpFoundation\JsonResponse|Response
      */
     public function discussions_addmember(): Response
@@ -309,9 +307,8 @@ class DiscussionsController extends AbstractController
 
     }
 
-    //@Route("/restapi/discussions/leave", name="discussions_leave")
     /**
-     * @Route("/discussions/leave", name="discussions_leave")
+     * @Route("/restapi/discussions/leave", name="discussions_leave")
      * @return \Symfony\Component\HttpFoundation\JsonResponse|Response
      */
     public function discussions_leave(): Response
@@ -402,9 +399,8 @@ class DiscussionsController extends AbstractController
         return $resp_jwt_json;                                     //Envoi du token jwt
     }
 
-    //@Route("/restapi/discussions/list", name="discussions_list")
     /**
-     * @Route("/discussions/list", name="discussions_list")
+     * @Route("/restapi/discussions/list", name="discussions_list")
      * @return \Symfony\Component\HttpFoundation\JsonResponse|Response
      */
     public function discussions_list(): Response
