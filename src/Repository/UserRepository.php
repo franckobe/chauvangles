@@ -23,17 +23,13 @@ class UserRepository extends ServiceEntityRepository
     * @return User[] Returns an array of User objects
      */
 
-    public function findByExampleField()
+    public function findConnectedUsers() : array
     {
         return  $this->createQueryBuilder('u')
             ->andWhere('u.apiToken IS NOT NULL')
             ->getQuery()
             ->getResult();
-
     }
-
-
-
 
     /*
     public function findOneBySomeField($value): ?User
