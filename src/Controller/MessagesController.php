@@ -122,83 +122,73 @@ class MessagesController extends AbstractController
      */
     public function messages_postmessage(): Response
     {
+        $controller_name = (string) null;
+        $code = (string) null;
+        $description = (string) null;
+        $request_token = (string) null;
+        $request_discussionId = (string) null;
+        $discuss_name_existing = Group::class;
+        $request_message = (string) null;
+
         //On recupere la requete utilisateur
         $request_str = $this->container->get('request_stack')->getCurrentRequest()->getContent(); //STRING
         $request_json = json_decode($request_str, true); //object JSON
         foreach ($request_json as $key => $value){
-            if ($key == "token") {
+            if ($key === 'token') {
                 $request_token = $value;
-            } else if ($key == "discussionId") {
+            } else if ($key === 'discussionId') {
                 $request_discussionId = $value;
-            } else if ($key == "message") {
+            } else if ($key === 'message') {
                 $request_message = $value;
-            } else {
-//                $request_token = "token string";
-//                $request_discussionId = "discussionId string";
-//                $request_message = "message string";
-//                return new Response("La requête n'est pas bien constituée : \"$request_token : $request_discussionId : $request_message\"");
             }
         }
-//        return new Response("La requête est bien constituée : \"$request_token : $request_discussionId : $request_message\"");
 
-        if (isset($request_discussionId)){
+        if ($request_discussionId !== null){
             $discuss_name_existing = $this->getDoctrine()
                 ->getRepository(Group::class)
                 ->findOneBy(['discussionName' => $request_discussionId]);
         }
 
-        //CONDITION :
-        //  IF SESSIONS TOKEN existe //
+        if($request_token !== null && $request_token === $this->getUser()->getApiToken()) {
 
+            if ($this->getUser()->getGroups()->contains($discuss_name_existing)) {
+                $manager = $this->getDoctrine()->getManager();
+                $date = new \DateTime();
+                $group = new GroupMessage();
+                $group->setGroup($discuss_name_existing);
+                $group->setSender($this->getUser());
+                $group->setDateEmission($date);
+                $group->setDateReception($date);
+                $group->setDateRead($date);
+                $group->setContent($request_message);
+                $manager->persist($group);
+                $manager->flush();
 
-        if($this->getUser()->getGroups()->contains($discuss_name_existing))
-        {
-            //  IF USER IS MEMBER OF DISCUSS
-            //  ENREGISTRER MESSAGE POUR DISCUSS AVEC : LOGIN USER ID / DATE HEURE etc..
-            $manager = $this->getDoctrine()->getManager();
-            $groupin = $this->getDoctrine()
-                ->getRepository(Group::class)
-                ->find($discuss_name_existing);
-            $date = new \DateTime();
-            $group = new GroupMessage();
-            $group->setGroup($groupin);
-            $group->setSender($this->getUser());
-            $group->setDateEmission( $date);
-            $group->setDateReception($date);
-            $group->setDateRead($date);
-            $group->setContent($request_message);
-            $manager->persist($group);
-            $manager->flush();
-
-            $controller_name = "discussion";
-            $code = "T0012";
-            $description = "Message :$request_message: enregistré avec succès";
+                $controller_name = 'discussion';
+                $code = 'T0012';
+                $description = 'Message : ' . $request_message . ': enregistré avec succès';
+            }
+            else
+            {
+                //  IF USER ACCESS DENIED DISCUSS : E0009
+                $controller_name='error';
+                $code = 'E0009';
+                $description= 'Vous ne pouvez pas réaliser cette opération car la discussion n\'existe pas ou que vous n\'en faites pas partie';
+            }
         }
-        else
-        {
-            //  IF USER ACCESS DENIED DISCUSS : E0009
-            $controller_name="error";
-            $code = "E0009";
-            $description= "Vous ne pouvez pas réaliser cette opération car la discussion n'existe pas ou que vous n'en faites pas partie";
-        }
-//        $payload = $this->messages_getmessages();
 
-        $payload="";
+
         //CREATE RESPONSE ----------------------------------------------------------------------------------------------------------------------------
-        $resp_data = $this->get('serializer')->serialize($payload, 'json');                         //Met au bon format
-        $resp_payload = json_decode($resp_data);                                                //Decodage string to json
-
         //Mise en forme du contenu --------
         $resp_content_json = array(
             'type' => $controller_name,
             'code' => $code,
             'description' => $description,
-            'payload' => $resp_payload
         );
-        $resp_jwt = JWT::encode($resp_content_json,'toto');          //On le met au format JWT
+
         $resp_jwt_json = $this->json(array(
-            'jwt'=> $resp_jwt
-        ));                                                         // Creation du JSON contenant jwt: token_jwt
-        return $resp_jwt_json;                                     //Envoi du token jwt
+            'jwt'=> JWT::encode($resp_content_json,getenv('APP_SECRET'))
+        ));
+        return $resp_jwt_json;
     }
 }
