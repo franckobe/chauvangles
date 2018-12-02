@@ -42,13 +42,13 @@ class DiscussionsController extends AbstractController
     public function discussions_getcreate(): Response
     {
 
-        $request_discussionName= '';
+        $request_discussionName = (string) null;
         $request_members = [];
         $discussionWithoutDiscussionNameHaveSameMembersId = null;
         $discussionWithoutDiscussionNameHaveSameMembers = false;
         $discussionsWithSameMembers = Group::class;
         $discuss_name_existing = Group::class;
-        $users = User::class;
+        $users = array();
         $controller_name = (string) null;
         $description = (string) null;
         $code = (string) null;
@@ -77,7 +77,8 @@ class DiscussionsController extends AbstractController
         }
 
         //SI ON A PAS DE DISCUSSION NAME DANS LA REQUETE CLIENT
-        if ($request_discussionName === null){
+
+        if (empty($request_discussionName)){
             //Vérifie si une discussion avec les mêmes membres éxiste dans le cas ou il n'y a pas de discussion_name
             $discussions = $this->getDoctrine()
                 ->getRepository(Group::class)
@@ -86,15 +87,18 @@ class DiscussionsController extends AbstractController
             $userId = [];
             foreach ($discussions as $discussion){
                 $users = $discussion->getUsers();
+
                 foreach ($users as $user){
-                    $userId =  $user->id;
+                    $userId[] =  $user->getId();
                 }
+
                 if (array_diff($userId,$request_members) === array_diff($request_members,$userId)) {
                     $discussionWithoutDiscussionNameHaveSameMembersId = $discussion->getId();
                     $discussionWithoutDiscussionNameHaveSameMembers = true;
                 }
                 $userId = array();
             }
+
 
             $discussionsWithSameMembers = $this->getDoctrine()
                 ->getRepository(Group::class)
@@ -118,11 +122,11 @@ class DiscussionsController extends AbstractController
                 $count = \count($request_members);
 
                 foreach ($request_members as $members){
-                    $users = $this->getDoctrine()
+                    $users[] = $this->getDoctrine()
                         ->getRepository(User::class)
                         ->find($members);
                 }
-
+                $users[] = $this->getUser(); //Add the current user (creator) in the discussion
                 if ($count >= 9) {
                     $controller_name = 'error';
                     $code = 'E0005';
@@ -139,15 +143,13 @@ class DiscussionsController extends AbstractController
                         $group->addUser($user);
                         $user->addGroup($group);
                     }
-
-                    $group->addUser($this->getUser()->getId()); //ON AJOUTE AUSSI LE CREATEUR EN TANT QUE MEMBRE !
                     $manager->persist($group);
                     $manager->flush();
 
                     //  SINON la discussion est créée et les membres ajoutés : RETURN T0007
                     $controller_name = 'discussion';
                     $code = 'T0007';
-                    $description = "Création d'une discussion";
+                    $description = 'Création d\'une discussion';
                     $payload = array(
                         'id' => $group->getId(),
                         'label' => $request_discussionName
@@ -156,34 +158,45 @@ class DiscussionsController extends AbstractController
             }
         }
         //SI LA DISCUSSION EXISTE
-        if ($discuss_name_existing && $discussionWithoutDiscussionNameHaveSameMembers === false)
-        {
-            //  IF DISCUSSION_NAME existe : IF MEMBERs IS DEFINE : GET THE DISCUSSION (RETURN T0006)
-            $controller_name = "discussion";
-            $code = "T0006";
-            $description = "Récupération d'une discussion existante";
-//            $messages = $this->getLastMessages($request_discussionName);
-            $payload = array(
-                'id' => $request_discussionName,
-                'label' => $request_discussionName,
-//                'lastMessages' => $messages
-            );
-        }elseif($discussionWithoutDiscussionNameHaveSameMembers){
-            //  IF DISCUSSION_NAME existe : IF MEMBERs IS DEFINE : GET THE DISCUSSION (RETURN T0006)
-            $controller_name = "discussion";
-            $code = "T0006";
-            $description = "Récupération d'une discussion existante";
-//            $messages = $this->getLastMessages($request_discussionName); // Doit renvoyer des objets group_message
-            $payload = array(
-                'id' => $discussionsWithSameMembers->getId(),
-                'label' => $discussionsWithSameMembers->getName()
-//                'lastMessages' => $messages
-            );
-        }
+            if ($discuss_name_existing !== null && $discussionWithoutDiscussionNameHaveSameMembers === false)
+            {
+                //  IF DISCUSSION_NAME existe : IF MEMBERs IS DEFINE : GET THE DISCUSSION (RETURN T0006)
+                $controller_name = 'discussion';
+                $code = 'T0006';
+                $description = 'Récupération d\'une discussion existante';
+                $id_discuss = $discuss_name_existing->getId();
+
+                // Get all messages with the given discussion ID
+                $messages_array = $this->getDoctrine()
+                    ->getRepository(GroupMessage::class)
+                    ->findBy(['group_' => $id_discuss], null, 20);
+
+                //Make a payload with all needed informations
+                $payload = array(
+                    'id' => $request_discussionName,
+                    'label' => $request_discussionName,
+                    'lastMessages' => $messages_array
+                );
+            }elseif($discussionWithoutDiscussionNameHaveSameMembers){
+                //  IF DISCUSSION_NAME existe : IF MEMBERs IS DEFINE : GET THE DISCUSSION (RETURN T0006)
+                $controller_name = 'discussion';
+                $code = 'T0006';
+                $description = 'Récupération d\'une discussion existante';
+
+                $messages_array = $this->getDoctrine()
+                    ->getRepository(GroupMessage::class)
+                    ->findBy(['group_' => $discussionWithoutDiscussionNameHaveSameMembersId], null, 20);
+
+                $payload = array(
+                    'id' => $discussionsWithSameMembers->getId(),
+                    'label' => $discussionsWithSameMembers->getName(),
+                    'lastMessages' => $messages_array
+                );
+            }
         }
 
         //CREATE RESPONSE ----------------------------------------------------------------------------------------------------------------------------
-        $resp_data = $this->get('serializer')->serialize($payload, 'json');                         //Met au bon format
+        $resp_data = $this->get('serializer')->serialize($payload, 'json',array('groups' => array('group3', 'group4')) );                         //Met au bon format
         $resp_payload = json_decode($resp_data);                                                //Decodage string to json
 
         //Mise en forme du contenu --------
