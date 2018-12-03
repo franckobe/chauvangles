@@ -46,8 +46,28 @@ Avec l'url précédente on définit les paramètres suivants :
 ## Seed de données
 
     php bin/console doctrine:fixtures:load --append
-
+    
+>   La table user est désormais remplie, le mdp pour chaque user est "toto"
 
 ## Lancer le projet
 
 	php bin/console server:run
+
+##JWT 
+> Si jamais le login ne fonctionne pas avec une erreur sur le JWT il faut re-générer une paire de clefs
+
+    openssl genrsa -out config/jwt/private.pem -aes256 4096
+    
+    openssl rsa -pubout -in config/jwt/private.pem -out config/jwt/public.pem
+    
+La passphrase qui est demandée lors de la génération des clefs doit être remplacée dans le fichier .env
+
+    JWT_PASSPHRASE=mapassphrase
+    
+L'ensemble des messages renvoyés par l'api sont cryptés et encodé à l'aide de la variale d'environnement suivante:
+
+    APP_SECRET
+    
+Pour décoder le JWT et analyser son contenu aucune clef ou passphrase n'est nécessaire il suffit de se rendre sur: 
+
+    https://jwt.io/
