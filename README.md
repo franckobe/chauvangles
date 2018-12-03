@@ -53,7 +53,7 @@ Avec l'url précédente on définit les paramètres suivants :
 
 	php bin/console server:run
 
-##JWT 
+## JWT 
 > Si jamais le login ne fonctionne pas avec une erreur sur le JWT il faut re-générer une paire de clefs
 
     openssl genrsa -out config/jwt/private.pem -aes256 4096
