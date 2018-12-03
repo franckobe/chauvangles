@@ -225,7 +225,7 @@ class DiscussionsController extends AbstractController
         $code = (string) null;
         $description = (string) null;
         $payload = (string) null;
-        $request_token = (string) null;
+        $request_token = null;
 
         //On recupere la requete utilisateur
         $request_str = $this->container->get('request_stack')->getCurrentRequest()->getContent(); //STRING
@@ -330,6 +330,7 @@ class DiscussionsController extends AbstractController
         $code = (string) null;
         $description = (string) null;
         $payload = (string) null;
+        $request_token = null;
 
         //On recupere la requete utilisateur
         $request_str = $this->container->get('request_stack')->getCurrentRequest()->getContent(); //STRING
@@ -350,6 +351,12 @@ class DiscussionsController extends AbstractController
                 $discuss_name_existing = $this->getDoctrine()
                     ->getRepository(Group::class)
                     ->findOneBy(['discussionName' => $request_discussionId]);
+
+               if($discuss_name_existing){
+                   $group_message_existing = $this->getDoctrine()
+                       ->getRepository(GroupMessage::class)
+                       ->findBy(['group_' =>$discuss_name_existing->getId()]);
+                   }
             }
 
             //CONDITION :
@@ -366,8 +373,6 @@ class DiscussionsController extends AbstractController
                     $controller_name = "discussion";
                     $code = "T0009";
                     $description = "La discussion a été supprimée, ainsi que son historique";
-
-                    //userCreator Leave -> Delete Discussion + Deletes Messages
                 } else {
                     //      IF NOT : RETURN E0007
                     $controller_name = "error";
@@ -375,7 +380,7 @@ class DiscussionsController extends AbstractController
                     $description = "Pour quitter une conversation dont vous êtes créateur, il faut forcer sa suppression";
                 }
             }
-            if ($this->getUser()->getGroups()->contains($discuss_name_existing)) {
+            if ($this->getUser()->getGroups()->contains($discuss_name_existing) && $this->getUser()->getId() !== $discuss_name_existing->getCreator()) {
                 //  IF USER IS MEMBER OF DISCUSS
                 $this->getUser()->removeGroup($discuss_name_existing);
                 $manager = $this->getDoctrine()->getManager();
@@ -384,8 +389,8 @@ class DiscussionsController extends AbstractController
                 $controller_name = "discussion";
                 $code = "T0010";
                 $description = "Vous avez quitté la conversation";
-            } else {
-                //  IF NOT : RETURN E0008
+            }
+            elseif ($this->getUser()->getGroups()->contains($discuss_name_existing) === false) {
                 $controller_name = "error";
                 $code = "E0008";
                 $description = "Vous ne pouvez quitter cette conversation car vous n'en faites par partie ou qu'elle n'existe pas";
@@ -403,9 +408,8 @@ class DiscussionsController extends AbstractController
             'description' => $description,
             'payload' => $resp_payload
         );
-        $resp_jwt = JWT::encode($resp_content_json,'toto');          //On le met au format JWT
         $resp_jwt_json = $this->json(array(
-            'jwt'=> $resp_jwt
+            'jwt'=> JWT::encode($resp_content_json,getenv('APP_SECRET'))
         ));                                                         // Creation du JSON contenant jwt: token_jwt
         return $resp_jwt_json;                                     //Envoi du token jwt
     }
@@ -474,9 +478,8 @@ class DiscussionsController extends AbstractController
             'description' => $description,
             'payload' => $resp_payload
         );
-        $resp_jwt = JWT::encode($resp_content_json,'toto');          //On le met au format JWT
         $resp_jwt_json = $this->json(array(
-            'jwt'=> $resp_jwt
+            'jwt'=> JWT::encode($resp_content_json,getenv('APP_SECRET'))
         ));                                                         // Creation du JSON contenant jwt: token_jwt
         return $resp_jwt_json;                                     //Envoi du token jwt
     }

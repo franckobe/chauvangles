@@ -86,11 +86,7 @@ class Group
 
     public function getUser($user_id)
     {
-        //IF USER IS NOT IN THE GROUP RETURN FALSE
         return true;
-
-        //IF USER IS IN THE GROUP RETURN TRUE
-//        return false;
     }
 
 

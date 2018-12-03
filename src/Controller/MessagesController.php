@@ -28,7 +28,7 @@ class MessagesController extends AbstractController
      */
     public function messages_getmessages(): Response
     {
-        $request_token = (string) null;
+        $request_token = null;
         $request_discussionId = (string) null;
         $discuss_name_existing = Group::class;
         $request_messageNumber = (integer) null;
@@ -125,7 +125,7 @@ class MessagesController extends AbstractController
         $controller_name = (string) null;
         $code = (string) null;
         $description = (string) null;
-        $request_token = (string) null;
+        $request_token =  null;
         $request_discussionId = (string) null;
         $discuss_name_existing = Group::class;
         $request_message = (string) null;

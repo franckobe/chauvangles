@@ -52,7 +52,7 @@ class GroupMessage
     private $date_read;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\User", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\User")
      */
     private $sender;
 

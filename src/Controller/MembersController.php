@@ -35,7 +35,7 @@ class MembersController extends AbstractController
         $controller_name = (string) null;
         $code = (string) null;
         $description = (string) null;
-        $request_token = (string) null;
+        $request_token = null;
         $jsonDecode = (string) null;
 
         //Get User request
@@ -97,7 +97,7 @@ class MembersController extends AbstractController
         $controller_name = (string) null;
         $code = (string) null;
         $description = (string) null;
-        $request_token = (string) null;
+        $request_token = null;
 
         //Get User request
         $request_str = $this->container->get('request_stack')->getCurrentRequest()->getContent(); //STRING
